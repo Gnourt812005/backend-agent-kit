@@ -20,7 +20,7 @@ Design aggregates, entities, value objects, domain events, and business invarian
 ## Design Rules
 1. **Encapsulation**: State changes occur strictly through methods on Aggregate Roots.
 2. **Factories**: Provide `create()` for new instances (validates invariants) and `instantiate()` for reconstitution.
-3. **No Framework Dependencies**: Core layer has zero dependencies on NestJS, Mongoose, HTTP, or external libs.
+3. **No Framework Dependencies**: Domain layer has zero dependencies on NestJS, Mongoose, HTTP, or external libs.
 4. **Value Objects**: Use immutable Value Objects for complex attributes or validated fields.
 
 ## Checklist

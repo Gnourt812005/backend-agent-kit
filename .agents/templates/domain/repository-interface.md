@@ -1,25 +1,31 @@
 ---
 template: repository-interface
 placeholders: [DomainName, domainName, DOMAIN_NAME]
-generates: src/core/interfaces/repositories/{{domainName}}.repository.ts
+generates: src/domain/ports/repositories/{{domainName}}.repository.port.ts
 ---
 
-# {{DomainName}} Repository Interface Template
+# {{DomainName}} Repository Port Template
 
-Core repository port interface + Symbol Dependency Injection Token.
+Domain repository port interface + Symbol Dependency Injection Token.
 
 ## Code Blueprint
 
 ```typescript
-// src/core/interfaces/repositories/{{domainName}}.repository.ts
-import { {{DomainName}}Root } from '../../aggregate-roots/{{domainName}}.aggregate';
+// src/domain/ports/repositories/{{domainName}}.repository.port.ts
+import { {{DomainName}}Root } from '../../aggregate-roots/{{domainName}}.root';
+import type { Nullable } from '@shared/types/common.type';
 
-export interface I{{DomainName}}Repository {
-  findById(id: string): Promise<{{DomainName}}Root | null>;
-  save(aggregate: {{DomainName}}Root): Promise<void>;
+export const {{DOMAIN_NAME}}_REPOSITORY = Symbol('{{DOMAIN_NAME}}_REPOSITORY');
+
+export interface {{DomainName}}RepositoryPort {
+  save(aggregate: {{DomainName}}Root, options?: { session?: unknown }): Promise<{{DomainName}}Root>;
+  findById(id: string, options?: { session?: unknown }): Promise<Nullable<{{DomainName}}Root>>;
   delete(id: string): Promise<void>;
 }
-
-// WHY: Export Symbol DI token in SCREAMING_SNAKE_CASE for NestJS provider binding
-export const {{DOMAIN_NAME}}_REPOSITORY = Symbol('{{DOMAIN_NAME}}_REPOSITORY');
 ```
+
+## Post-Generation Checklist
+- [ ] Interface named `{Name}RepositoryPort`
+- [ ] File named `<name>.repository.port.ts`
+- [ ] Symbol DI token exported in `SCREAMING_SNAKE_CASE`
+- [ ] `session` parameter on write methods for UoW support

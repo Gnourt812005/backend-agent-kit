@@ -6,8 +6,8 @@ import argparse
 import subprocess
 from datetime import datetime
 
-CORE_FORBIDDEN = [r'@nestjs/', r'mongoose', r'express', r'fastify', r'typeorm', r'prisma', r'axios', r'node-fetch']
-APP_FORBIDDEN = [r'src/infrastructure/', r'src/presentation/', r'@nestjs/microservices', r'mongoose']
+CORE_FORBIDDEN = [r'@nestjs/', r'mongoose', r'express', r'fastify', r'typeorm', r'prisma', r'axios', r'node-fetch', r'@sgod-']
+APP_FORBIDDEN = [r'src/infrastructure/', r'src/api/', r'@nestjs/microservices', r'mongoose', r'@sgod-']
 
 def run_cmd(cmd):
     res = subprocess.run(cmd, shell=True, capture_output=True, text=True)
@@ -60,8 +60,9 @@ def scan_file(file_path, root_dir):
     with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
         lines = f.readlines()
 
-    is_core = "src/core/" in rel_path or rel_path.startswith("src/core/")
-    is_app = "src/application/" in rel_path or rel_path.startswith("src/application/")
+    is_core = rel_path.startswith("src/domain/")
+    is_app = rel_path.startswith("src/applications/")
+    is_api = rel_path.startswith("src/api/")
 
     for idx, line in enumerate(lines, 1):
         if not (line.startswith("import ") or line.startswith("from ") or "require(" in line):
@@ -73,7 +74,7 @@ def scan_file(file_path, root_dir):
                     findings.append({
                         "file": rel_path,
                         "line": idx,
-                        "rule": f"Core layer importing framework/driver ({pattern})",
+                        "rule": f"Domain layer importing framework/driver ({pattern})",
                         "risk": "HIGH"
                     })
         elif is_app:
@@ -82,7 +83,16 @@ def scan_file(file_path, root_dir):
                     findings.append({
                         "file": rel_path,
                         "line": idx,
-                        "rule": f"Application layer importing infrastructure/presentation ({pattern})",
+                        "rule": f"Applications layer importing infrastructure/api ({pattern})",
+                        "risk": "HIGH"
+                    })
+        elif is_api:
+            for pattern in [r'mongoose', r'@nestjs/mongoose']:
+                if re.search(pattern, line):
+                    findings.append({
+                        "file": rel_path,
+                        "line": idx,
+                        "rule": f"API layer importing database driver ({pattern})",
                         "risk": "HIGH"
                     })
 

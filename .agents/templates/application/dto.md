@@ -1,17 +1,17 @@
 ---
 template: dto
 placeholders: [FeatureName, featureName]
-generates: src/application/commands/{{featureName}}/{{featureName}}.dto.ts
+generates: src/applications/dtos/{{featureName}}.dto.ts
 ---
 
 # {{FeatureName}} DTO Template
 
-DTO schema validated with Zod via `nestjs-zod`.
+DTO schema validated with Zod via `nestjs-zod`. Re-exported from `@applications/dtos/`.
 
 ## Code Blueprint
 
 ```typescript
-// src/application/commands/{{featureName}}/{{featureName}}.dto.ts
+// src/applications/dtos/{{featureName}}.dto.ts
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
 
@@ -22,4 +22,12 @@ export const {{FeatureName}}Schema = z.object({
 });
 
 export class {{FeatureName}}Dto extends createZodDto({{FeatureName}}Schema) {}
+
+export type {{FeatureName}} = z.infer<typeof {{FeatureName}}Schema>;
 ```
+
+## Post-Generation Checklist
+- [ ] Zod schema defined and exported
+- [ ] DTO class extends `createZodDto(Schema)`
+- [ ] Type export for inferred type
+- [ ] File placed in `src/applications/dtos/`

@@ -10,10 +10,10 @@ Execute Phase 1 Architecture Alignment on a messy legacy module. Restructure fil
 1. Activate [`architect`](../agents/architect.md) and [`code-reviewer`](../agents/code-reviewer.md) agents.
 2. Run skill [`refactor-engine`](../skills/refactor-engine/SKILL.md).
 3. Move files to `.agents/` layers:
-   - Domain logic → `src/core/`
-   - Use cases → `src/application/`
+   - Domain logic → `src/domain/`
+   - Use cases → `src/applications/`
    - Schemas & Repos → `src/infrastructure/`
-   - Controllers → `src/presentation/`
+   - Controllers → `src/api/`
 4. Apply Decision Matrix:
    - Blank out DB calls, external calls, and entangled rules.
    - Insert inline backlink: `// see: docs/refactor/YYYYMMDD-seq-name.md`.

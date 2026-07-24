@@ -7,23 +7,23 @@ description: Mandatory layer dependency rules for Clean / Hexagonal Architecture
 
 ## Core Rule
 
-**Infrastructure / Presentation → Application → Core**
+**Infrastructure / API → Applications → Domain**
 
 Inner layers MUST NOT know about outer layers.
 
 ```
        ┌────────────────────────┐
-       │   Presentation Layer   │
+       │       API Layer        │
        └───────────┬────────────┘
                    │
                    ▼
        ┌────────────────────────┐
-       │   Application Layer    │
+       │   Applications Layer   │
        └───────────┬────────────┘
                    │
                    ▼
        ┌────────────────────────┐
-       │       Core Layer       │
+       │     Domain Layer       │
        └────────────────────────┘
                    ▲
                    │
@@ -34,15 +34,15 @@ Inner layers MUST NOT know about outer layers.
 
 ## Directives
 
-1. **Core Layer (`src/core/`)**:
-   - MUST contain pure domain logic only (Aggregates, Entities, Value Objects, Domain Events, Exceptions, Interfaces).
+1. **Domain Layer (`src/domain/`)**:
+   - MUST contain pure domain logic only (Aggregates, Entities, Value Objects, Domain Events, Exceptions, Ports).
    - MUST NOT import NestJS, Mongoose, Express, Fastify, HTTP, or infrastructure libraries.
-2. **Application Layer (`src/application/`)**:
-   - MUST depend only on Core layer types and Port interfaces.
-   - MUST NOT import concrete Mongoose repositories, controllers, or HTTP server libraries.
+2. **Applications Layer (`src/applications/`)**:
+   - MUST depend only on Domain layer types and Port interfaces.
+   - MUST NOT import concrete Mongoose repositories, API controllers, or HTTP server libraries.
 3. **Infrastructure Layer (`src/infrastructure/`)**:
-   - Implements ports declared in Core layer (Repositories, Mailers, Sockets, Event Bus).
-   - MUST NOT be imported directly by Core or Presentation controllers.
-4. **Presentation Layer (`src/presentation/`)**:
-   - Thin controllers that parse request DTOs and dispatch Commands/Queries.
-   - MUST NOT bypass Application layer to execute raw database queries.
+   - Implements ports declared in Domain layer (Repositories, Mailers, Sockets, Event Bus).
+   - MUST NOT be imported directly by Domain or API layers.
+4. **API Layer (`src/api/`)**:
+   - Thin gRPC/Kafka controllers that parse request DTOs and dispatch Commands/Queries.
+   - MUST NOT bypass Applications layer to execute raw database queries.

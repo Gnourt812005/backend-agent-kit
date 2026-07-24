@@ -1,30 +1,30 @@
 ---
 template: read-service
 placeholders: [DomainName, domainName, DOMAIN_NAME]
-generates: src/infrastructure/mongo/read-services/{{domainName}}.read-service.ts
+generates: src/domain/ports/repositories/read/{{domainName}}-read.repository.port.ts
 ---
 
-# {{DomainName}} Read Service Template
+# {{DomainName}} Read Repository Port Template
 
-Read Service for CQRS query projections querying Mongoose directly.
+Read repository port for CQRS query projections.
 
 ## Code Blueprint
 
 ```typescript
-// src/infrastructure/mongo/read-services/{{domainName}}.read-service.ts
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { {{DomainName}}Document, {{DomainName}}Model } from '../schemas/{{domainName}}.schema';
+// src/domain/ports/repositories/read/{{domainName}}-read.repository.port.ts
+import { {{DomainName}}Root } from '@domain/aggregate-roots/{{domainName}}.root';
+import type { Nullable } from '@shared/types/common.type';
 
-@Injectable()
-export class Mongo{{DomainName}}ReadService {
-  constructor(
-    @InjectModel({{DomainName}}Model.name) private readonly model: Model<{{DomainName}}Document>,
-  ) {}
+export const {{DOMAIN_NAME}}_READ_REPOSITORY = Symbol('{{DOMAIN_NAME}}_READ_REPOSITORY');
 
-  async findList(filters: Record<string, any>): Promise<any[]> {
-    return this.model.find(filters).lean().exec();
-  }
+export interface {{DomainName}}ReadRepositoryPort {
+  findList(filters: Record<string, unknown>): Promise<{{DomainName}}Root[]>;
+  findById(id: string): Promise<Nullable<{{DomainName}}Root>>;
 }
 ```
+
+## Post-Generation Checklist
+- [ ] Interface named `{Name}ReadRepositoryPort`
+- [ ] File named `<name>-read.repository.port.ts`
+- [ ] Symbol DI token exported in `SCREAMING_SNAKE_CASE`
+- [ ] Located in `src/domain/ports/repositories/read/`

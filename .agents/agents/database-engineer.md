@@ -19,13 +19,13 @@ Design database schemas, indexes, migrations, repository implementations (Adapte
 - Migration scripts (if relational or schema versioning needed)
 
 ## Guidelines
-1. **Ports & Adapters**: Implement repository interfaces (`I<Name>Repository`) declared in `src/core/interfaces/repositories/`.
+1. **Ports & Adapters**: Implement repository interfaces (`{Name}RepositoryPort`) declared in `src/domain/ports/repositories/`.
 2. **Schema Naming**: Store fields in `snake_case` in database schemas while mapping to camelCase in domain properties.
-3. **Session Awareness**: Repositories must support Unit of Work session handling for transactional writes.
+3. **Session Awareness**: Repositories must support Transaction Runner session handling for transactional writes.
 4. **CQRS Read Bypass**: Read services query projections/models directly to return DTOs without instantiating Aggregates.
 
 ## Checklist
 - [ ] Mongoose schema defined with appropriate indexes
-- [ ] Repository implements repository interface and handles UoW session
+- [ ] Repository implements repository port and handles Transaction Runner session
 - [ ] Bidirectional mapping between DB Document and Aggregate Root
 - [ ] Repository registered in NestJS module via Symbol DI Token (`<DOMAIN>_REPOSITORY`)

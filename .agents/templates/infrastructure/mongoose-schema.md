@@ -1,7 +1,7 @@
 ---
 template: mongoose-schema
 placeholders: [DomainName, domainName]
-generates: src/infrastructure/mongo/schemas/{{domainName}}.schema.ts
+generates: src/infrastructure/persistence/mongoose/schemas/{{domainName}}.schema.ts
 ---
 
 # {{DomainName}} Mongoose Schema Template
@@ -11,11 +11,11 @@ Mongoose database schema with `snake_case` storage properties.
 ## Code Blueprint
 
 ```typescript
-// src/infrastructure/mongo/schemas/{{domainName}}.schema.ts
+// src/infrastructure/persistence/mongoose/schemas/{{domainName}}.schema.ts
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
-@Schema({ collection: '{{domainName}}s', timestamps: true })
+@Schema({ collection: '{{domainName}}s', timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } })
 export class {{DomainName}}Model {
   _id: string;
 
@@ -30,3 +30,9 @@ export class {{DomainName}}Model {
 export type {{DomainName}}Document = {{DomainName}}Model & Document;
 export const {{DomainName}}Schema = SchemaFactory.createForClass({{DomainName}}Model);
 ```
+
+## Post-Generation Checklist
+- [ ] Collection name uses plural lowercase
+- [ ] `snake_case` field names with `name:` option
+- [ ] `timestamps` with custom `created_at`/`updated_at`
+- [ ] File in `src/infrastructure/persistence/mongoose/schemas/`

@@ -17,14 +17,14 @@ Design test strategies, unit test suites for Core & Application layers, integrat
 - Test fixtures and mocks
 
 ## Strategy
-1. **Core Unit Tests**: Fast, zero-dependency unit tests verifying state transitions, factory validation, and domain events.
-2. **Application Unit Tests**: Test Command and Query handlers with mocked Repository ports and Unit of Work.
-3. **Integration / E2E Tests**: Test HTTP endpoints with NestJS `Test.createTestingModule()`.
+1. **Domain Unit Tests**: Fast, zero-dependency unit tests verifying state transitions, factory `create()` validation, and domain events.
+2. **Handler Unit Tests**: Test Command and Query handlers with mocked Repository ports and Transaction Runner.
+3. **Integration / E2E Tests**: Test gRPC endpoints with NestJS `Test.createTestingModule()`.
 
 ## Coverage Targets
-- Core Layer (Aggregates, VOs): 100% domain logic coverage
-- Application Layer (Handlers): 100% command execution path coverage
-- Presentation Layer: At least 1 happy-path and 1 error-path E2E test per controller endpoint
+- Domain Layer (Aggregates, VOs): 100% domain logic coverage
+- Handler Layer (Handlers): 100% command execution path coverage
+- API Layer: At least 1 happy-path and 1 error-path E2E test per gRPC endpoint
 
 ## Checklist
 - [ ] Aggregate invariants tested with valid and invalid inputs

@@ -19,10 +19,10 @@ Review code for Clean Architecture boundary compliance, import directions, namin
 ## Boundary Rules Matrix
 | Source Layer | Can Import From | Must NEVER Import From |
 |--------------|-----------------|------------------------|
-| **Core** (`src/core/`) | `src/core/` only | Application, Infrastructure, Presentation, NestJS, Mongoose, Fastify |
-| **Application** (`src/application/`) | Core, Application | Infrastructure, Presentation, Express, Mongoose, Drivers |
-| **Infrastructure** (`src/infrastructure/`) | Core, Application, Infrastructure | Presentation |
-| **Presentation** (`src/presentation/`) | Core, Application, Presentation | Direct database drivers (must go through App/Core ports) |
+| **Core** (`src/domain/`) | `src/domain/` only | Applications, Infrastructure, API, NestJS, Mongoose, Fastify |
+| **Application** (`src/applications/`) | Domain, Applications | Infrastructure, API, Express, Mongoose, Drivers |
+| **Infrastructure** (`src/infrastructure/`) | Domain, Applications, Infrastructure | API |
+| **Presentation** (`src/api/`) | Domain, Applications, API | Direct database drivers (must go through App/Core ports) |
 
 ## Checklist
 - [ ] No outer layer imports inside `src/core/`

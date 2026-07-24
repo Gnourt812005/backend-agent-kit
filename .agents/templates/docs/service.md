@@ -22,11 +22,13 @@
 
 ## Runtime Stack
 - Datastore: MongoDB (Mongoose)
-- Message Bus: RabbitMQ
+- Message Bus: Kafka
 - Cache: Redis
-- Auth Mechanism: JWT Bearer + Role Guards
+- Search: Elasticsearch
+- Auth Mechanism: gRPC metadata + CASL authorization
+- API: gRPC + Kafka (not REST)
 
 ## Deployment
 - Runtime Target: Docker / Kubernetes
 - Config Strategy: Environment variables via `@nestjs/config`
-- Secrets Strategy: Secret Manager / K8s Secrets
+- Secrets Strategy: K8s Secrets / Secret Manager

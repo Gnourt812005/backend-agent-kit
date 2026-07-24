@@ -4,20 +4,20 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
 SRC_DIR="$ROOT_DIR/src"
 
-echo "==> [validate-imports] Checking Application layer imports..."
+echo "==> [validate-imports] Checking Applications layer imports..."
 
-if [ ! -d "$SRC_DIR/application" ]; then
-  echo "    No src/application directory found, skipping import check."
+if [ ! -d "$SRC_DIR/applications" ]; then
+  echo "    No src/applications directory found, skipping import check."
   exit 0
 fi
 
-# Application layer must not import concrete infrastructure classes or presentation controllers
-VIOLATIONS=$(grep -rnE "from ['\"](\.\./\.\./infrastructure/mongo/repositories|\.\./\.\./presentation)" "$SRC_DIR/application" || true)
+# Applications layer must not import concrete infrastructure classes or API controllers
+VIOLATIONS=$(grep -rnE "from ['\"](\.\./\.\./infrastructure/persistence/mongoose/repositories|\.\./\.\./api)" "$SRC_DIR/applications" || true)
 
 if [ -n "$VIOLATIONS" ]; then
-  echo "❌ IMPORT VIOLATION: Application layer imports concrete infrastructure repositories or presentation controllers!"
+  echo "❌ IMPORT VIOLATION: Applications layer imports concrete infrastructure repositories or API controllers!"
   echo "$VIOLATIONS"
   exit 1
 else
-  echo "✅ Application layer imports clean."
+  echo "✅ Applications layer imports clean."
 fi

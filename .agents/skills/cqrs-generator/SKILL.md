@@ -1,6 +1,6 @@
 ---
 name: cqrs-generator
-description: Implements write-side commands and read-side queries with strict separation, Zod DTO validation, Unit of Work session handling, and read service projections. Use when creating a use case or when ADR selects CQRS.
+description: Implements write-side commands and read-side queries with strict separation, Zod DTO validation, Transaction Runner session handling, and read repository projections. Use when creating a use case or when ADR selects CQRS.
 ---
 
 # CQRS Generator Skill
@@ -8,8 +8,8 @@ description: Implements write-side commands and read-side queries with strict se
 ## Instructions
 
 1. Determine operation type:
-   - **Command (Write)**: Modifies state, uses Aggregate Root, wrapped in Unit of Work (`this.uow.execute()`), saves via Repository, publishes domain events.
-   - **Query (Read)**: Retrieves data, bypasses Aggregate Root, uses Read Service projection directly, returns DTO, no Unit of Work, no events.
+   - **Command (Write)**: Modifies state, uses Aggregate Root, wrapped in `MongoTransactionRunnerPort.runInTransaction()`, saves via Repository Port, publishes domain events.
+   - **Query (Read)**: Retrieves data, bypasses Aggregate Root, uses Read Repository Port directly, returns DTO, no Transaction Runner, no events.
 2. Render the correct templates:
    - Commands → `.agents/templates/application/command-handler.md`
    - Queries → `.agents/templates/application/query-handler.md`
@@ -20,17 +20,17 @@ description: Implements write-side commands and read-side queries with strict se
 
 | Aspect | Rule |
 |--------|------|
-| Transaction | ALWAYS wrap in `this.uow.execute()` |
+| Transaction | ALWAYS wrap in `this.mongoTx.runInTransaction()` |
 | Domain logic | Delegate to Aggregate Root methods (`create()`, `updateStatus()` etc) |
-| Persistence | Use repository port `I{Domain}Repository.save()` |
-| Events | Call `this.eventService.publishEvents(aggregate)` after save |
+| Persistence | Use repository port `{Name}RepositoryPort.save()` with `{ session }` |
+| Events | Call `this.eventService.publishEvents(aggregate, session)` after save |
 | Return | Return entity `id` string or `void` |
 
 ## Query Rules
 
 | Aspect | Rule |
 |--------|------|
-| Unit of Work | NEVER use — queries are read-only |
-| Data access | Read Service (`I{Domain}ReadService`) only — no Aggregate Roots |
+| Transaction Runner | NEVER use — queries are read-only |
+| Data access | Read Repository Port (`{Name}ReadRepositoryPort`) only — no Aggregate Roots |
 | Events | NEVER publish events from queries |
 | Return | DTO or DTO[] only |

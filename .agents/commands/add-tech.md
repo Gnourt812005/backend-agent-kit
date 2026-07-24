@@ -12,7 +12,7 @@ Integrate a new infrastructure technology (Redis cache, WebSocket gateway, Rabbi
 3. Check rules in [`.agents/rules/frameworks/`](../rules/frameworks/) and [`dependency-rule`](../rules/global/dependency-rule.md).
 4. Document the tech integration approach in `docs/tech/integrations.md`.
 5. Generate infrastructure module and adapter under `src/infrastructure/`.
-6. Bind adapter to a Core layer interface port using NestJS Symbol DI token.
+6. Bind adapter to a Domain layer interface port using NestJS Symbol DI token.
 7. Run [`after-generate.sh`](../hooks/after-generate.sh).
 
 ## Deliverables

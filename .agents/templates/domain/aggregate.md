@@ -1,7 +1,7 @@
 ---
 template: aggregate
 placeholders: [DomainName, domainName, DOMAIN_NAME]
-generates: src/core/aggregate-roots/{{domainName}}.aggregate.ts
+generates: src/domain/aggregate-roots/{{domainName}}.root.ts
 ---
 
 # {{DomainName}} Aggregate Root Template
@@ -11,35 +11,56 @@ Aggregate Root encapsulating state transitions, business invariants, and domain 
 ## Code Blueprint
 
 ```typescript
-// src/core/aggregate-roots/{{domainName}}.aggregate.ts
-import { BaseAggregateRoot } from '../common';
+// src/domain/aggregate-roots/{{domainName}}.root.ts
+import { AggregateRoot } from '../base/base.entity';
 import { E{{DomainName}}Status } from '../enums/{{domainName}}-status.enum';
 import { {{DomainName}}Exception } from '../exceptions/{{domainName}}.exception';
-import { {{DomainName}}StatusChangedEvent } from '../events/{{domainName}}-status-changed.domain-event';
+import { {{DomainName}}StatusChangedEvent } from '../events/{{domainName}}-status-changed.event';
 
-export interface {{DomainName}}Props {
+export interface {{DomainName}}RootProps {
+  id: string;
   ownerId: string;
   status: E{{DomainName}}Status;
   // WHY: Props contain pure domain attributes only (no MongoDB _id or DB timestamps)
 }
 
-export class {{DomainName}}Root extends BaseAggregateRoot<{{DomainName}}Props> {
+export interface Create{{DomainName}}Input {
+  ownerId: string;
+  // WHY: Factory input validates initial invariants
+}
+
+export class {{DomainName}}Root extends AggregateRoot<{{DomainName}}RootProps> {
+  protected constructor(props: {{DomainName}}RootProps) {
+    super(props);
+  }
+
   // ---- Factory Methods ----
 
   // WHY: create() is used for instantiating new domain concepts. It enforces initial invariants.
-  static create(props: {{DomainName}}Props): {{DomainName}}Root {
-    if (!props.ownerId) {
+  static create(input: Create{{DomainName}}Input): {{DomainName}}Root {
+    if (!input.ownerId) {
       throw new {{DomainName}}Exception('Owner ID is required', '{{DOMAIN_NAME}}_INVALID_OWNER');
     }
+    const now = new Date();
+    return new {{DomainName}}Root({
+      id: crypto.randomUUID(),
+      ownerId: input.ownerId,
+      status: E{{DomainName}}Status.DRAFT,
+      createdAt: now,
+      updatedAt: now,
+    });
+  }
+
+  // WHY: rehydrateProps() is used by Repositories to reconstitute existing aggregates from database storage.
+  static rehydrateProps(props: {{DomainName}}RootProps): {{DomainName}}Root {
     return new {{DomainName}}Root(props);
   }
 
-  // WHY: instantiate() is used by Repositories to reconstitute existing aggregates from database storage.
-  static instantiate(id: string, props: {{DomainName}}Props): {{DomainName}}Root {
-    return new {{DomainName}}Root(props, id);
-  }
-
   // ---- Getters ----
+
+  get id(): string {
+    return this.props.id;
+  }
 
   get ownerId(): string {
     return this.props.ownerId;
@@ -54,17 +75,18 @@ export class {{DomainName}}Root extends BaseAggregateRoot<{{DomainName}}Props> {
   updateStatus(newStatus: E{{DomainName}}Status): void {
     // WHY: Fail fast with private assertion guard
     this.assertValidStatusTransition(newStatus);
-    
+
     const previousStatus = this.props.status;
     this.props.status = newStatus;
+    this.props.updatedAt = new Date();
 
     // WHY: Record domain event on aggregate root for downstream side-effects
     this.addDomainEvent(
-      new {{DomainName}}StatusChangedEvent({
-        aggregateId: this.id,
+      new {{DomainName}}StatusChangedEvent(
+        this.props.id,
         previousStatus,
         newStatus,
-      }),
+      ),
     );
   }
 
@@ -82,6 +104,7 @@ export class {{DomainName}}Root extends BaseAggregateRoot<{{DomainName}}Props> {
 ```
 
 ## Post-Generation Checklist
-- [ ] Factory methods `create()` and `instantiate()` defined
+- [ ] Factory methods `create()` and `rehydrateProps()` defined
 - [ ] Business invariants guarded via fail-fast exceptions
 - [ ] Domain events added via `this.addDomainEvent()`
+- [ ] `protected constructor` (not public)

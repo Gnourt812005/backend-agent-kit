@@ -2,47 +2,47 @@
  * Example: Event Service Usage in Command Handler
  *
  * Shows: How to call eventService.publishEvents() after saving an aggregate.
- * The events are persisted in the same UoW transaction as the aggregate,
- * then delivered asynchronously to RabbitMQ via the outbox processor.
+ * The events are persisted in the same Transaction Runner session as the aggregate,
+ * then delivered asynchronously to Kafka via the outbox processor.
  *
- * See src/application/commands/ for real handler implementations.
+ * See src/applications/commands/ for real handler implementations.
  */
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
-import { CAMPAIGN_REPOSITORY, type ICampaignRepository } from '@/core/interfaces/repositories';
-import { UNIT_OF_WORK, type IUnitOfWork } from '@/application/interfaces/uow.interface';
-import { EVENT_SERVICE, type IEventService } from '@/application/interfaces/event-service.interface';
-import { CampaignRoot } from '@/core/aggregate-roots';
-import { CreateCampaignCommand } from './create-campaign.command';
-import { CampaignDto } from '@/application/dtos';
-import { CampaignMapper } from '@/application/mappers';
+import { ASSET_REPOSITORY, type AssetRepositoryPort } from '@domain/ports/repositories/asset.repository.port';
+import { MONGO_TRANSACTION_RUNNER, type MongoTransactionRunnerPort } from '@domain/ports/services/mongo-transaction-runner.port';
+import { EVENT_SERVICE, type IEventService } from '@applications/ports/event-service.interface';
+import { AssetRoot } from '@domain/aggregate-roots/asset.root';
+import { AssetCreateCommand } from './asset-create.command';
+import { AssetDto } from '@applications/dtos/asset.dto';
+import { AssetDtoMapper } from '@applications/mappers/asset-dto.mapper';
 
-@CommandHandler(CreateCampaignCommand)
-export class CreateCampaignHandler implements ICommandHandler<CreateCampaignCommand, CampaignDto> {
+@CommandHandler(AssetCreateCommand)
+export class AssetCreateHandler implements ICommandHandler<AssetCreateCommand, AssetDto> {
   constructor(
-    @Inject(CAMPAIGN_REPOSITORY)
-    private readonly repository: ICampaignRepository,
-    @Inject(UNIT_OF_WORK)
-    private readonly uow: IUnitOfWork,
+    @Inject(ASSET_REPOSITORY)
+    private readonly repository: AssetRepositoryPort,
+    @Inject(MONGO_TRANSACTION_RUNNER)
+    private readonly mongoTx: MongoTransactionRunnerPort,
     @Inject(EVENT_SERVICE)
     private readonly eventService: IEventService,
   ) {}
 
-  async execute(command: CreateCampaignCommand): Promise<CampaignDto> {
-    // Step 1: Start UoW transaction
-    return this.uow.execute(async () => {
+  async execute(command: AssetCreateCommand): Promise<AssetDto> {
+    // Step 1: Start Transaction Runner
+    return this.mongoTx.runInTransaction(async (session) => {
       // Step 2: Create aggregate (domain rules enforced here)
-      const campaign = CampaignRoot.create(command.input);
+      const asset = AssetRoot.create(command.props);
 
-      // Step 3: Save aggregate (auto-joins UoW session via ALS)
-      await this.repository.save(campaign);
+      // Step 3: Save aggregate (pass session explicitly)
+      const saved = await this.repository.save(asset, { session });
 
       // Step 4: Publish domain events → outbox records
       // These are inserted in the same MongoDB transaction as the save
-      await this.eventService.publishEvents(campaign);
+      await this.eventService.publishEvents(saved, session);
 
       // Step 5: Return DTO
-      return CampaignMapper.toDto(campaign);
+      return AssetDtoMapper.toDto(saved);
     });
   }
 }

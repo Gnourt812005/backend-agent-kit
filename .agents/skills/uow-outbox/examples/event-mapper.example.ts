@@ -2,37 +2,32 @@
  * Example: Event Mapper — Domain Events → Integration Events
  *
  * Shows: How domain events from aggregates are mapped to integration events
- * with transport metadata for reliable async delivery via outbox + RMQ.
+ * with transport metadata for reliable async delivery via outbox + Kafka.
  *
- * See src/application/mappers/event.mapper.ts for the real implementation.
+ * See src/applications/mappers/event.mapper.ts for the real implementation.
  */
 import { Injectable } from '@nestjs/common';
-import { DomainEvent } from '@/core/common/base.domain-event';
-import { IntegrationEvent } from '@/core/common/base.integration-event';
-import { IDomainEventMapper } from '@/application/interfaces/domain-event-mapper.interface';
+import { DomainEvent } from '@domain/events/domain-event.base';
+import { IntegrationEvent } from '@domain/events/integration-event.base';
+import { IDomainEventMapper } from '@applications/ports/domain-event-mapper.interface';
 
 @Injectable()
 export class DomainEventMapper implements IDomainEventMapper {
   mapToIntegrationEvents(domainEvents: DomainEvent[]): IntegrationEvent[] {
     return domainEvents.map(event => {
       switch (event.eventType) {
-        case 'CampaignParticipantCreated':
-          return new IntegrationEvent('campaign.participant.created', event.payload, {
-            correlationId: event.payload.campaignParticipantId,
+        case 'asset.created':
+          return new IntegrationEvent('asset.created', event.payload, {
+            correlationId: event.aggregateId,
           }, {
-            routingKey: 'campaign.participant.created',
+            routingKey: 'asset.created',
           });
 
-        case 'UserSignedUp':
-          return new IntegrationEvent('user.signed_up', event.payload, {
-            correlationId: event.payload.userId,
+        case 'asset.updated':
+          return new IntegrationEvent('asset.updated', event.payload, {
+            correlationId: event.aggregateId,
           }, {
-            routingKey: 'user.signed_up',
-          });
-
-        case 'EntityHardDeleted':
-          return new IntegrationEvent('entity.hard_deleted', event.payload, null, {
-            routingKey: 'entity.hard_deleted',
+            routingKey: 'asset.updated',
           });
 
         default:

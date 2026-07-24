@@ -13,7 +13,7 @@ This skill defines the rules for legacy refactoring when taking a messy codebase
 
 ## Phase 1 Rules: Architecture Alignment
 
-1. **Primary Goal**: Restructure legacy files into `.agents/` layers (`src/core/`, `src/application/`, `src/infrastructure/`, `src/presentation/`). Correctness of complex logic is NOT required in Phase 1.
+1. **Primary Goal**: Restructure legacy files into `.agents/` layers (`src/domain/`, `src/applications/`, `src/infrastructure/`, `src/api/`). Correctness of complex logic is NOT required in Phase 1.
 2. **Decision Matrix for Blanking Logic**:
 
 | Logic Type | Action |
@@ -40,10 +40,10 @@ This skill defines the rules for legacy refactoring when taking a messy codebase
 
 1. **Primary Goal**: Re-implement blanked logic from Refactor Notes into proper `.agents/` layers.
 2. **Inside-Out Restoration Order**:
-   - Step 1 (**Core**): Restore domain invariants, factory validation, and Value Objects.
+   - Step 1 (**Domain**): Restore domain invariants, factory validation, and Value Objects.
    - Step 2 (**Infrastructure**): Implement Repository Ports, Mongoose Schemas & Adapters.
-   - Step 3 (**Application**): Implement Command/Query Handlers wrapped in Unit of Work (`this.uow.execute()`).
-   - Step 4 (**Presentation**): Implement REST Controller with Zod DTO validation & guards.
+   - Step 3 (**Applications**): Implement Command/Query Handlers wrapped in Transaction Runner (`this.mongoTx.runInTransaction()`).
+   - Step 4 (**API**): Implement gRPC Controller with Zod DTO validation & guards.
 3. **Completion**:
    - Mark task items in `docs/refactor/*.md` complete.
    - Set note frontmatter `status: done`.

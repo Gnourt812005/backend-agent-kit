@@ -11,7 +11,7 @@ Add a domain event or integration event with Outbox transactional publishing or 
 2. Read `docs/domains/<domain>/events.md`.
 3. Run skill [`event-contract-design`](../skills/event-contract-design/SKILL.md).
 4. Generate code from templates:
-   - [`templates/domain/domain-event.md`](../templates/domain/domain-event.md) → `src/core/events/<event>.domain-event.ts`
+   - [`templates/domain/domain-event.md`](../templates/domain/domain-event.md) → `src/domain/events/<event>.event.ts`
    - [`templates/infrastructure/outbox-producer.md`](../templates/infrastructure/outbox-producer.md) → `src/infrastructure/events/<event>.producer.ts`
 5. If consumer: generate message handler in `src/infrastructure/events/consumers/`.
 6. Update `docs/domains/<domain>/events.md`.

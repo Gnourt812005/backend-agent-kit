@@ -12,26 +12,26 @@ description: Error handling principles, domain exceptions, and HTTP error envelo
    - Fail fast and throw explicit domain exceptions.
 
 2. **Domain Exceptions**:
-   - All domain errors inherit from a base `DomainException` or custom `{Domain}Exception`.
-   - Include a machine-readable `code`, human-readable `message`, and optional `details`.
+   - All domain errors inherit from a base `DomainException` or custom `{Name}Exception`.
+   - Include a machine-readable `code` and human-readable `message`.
 
 ```typescript
-export class CampaignException extends DomainException {
-  constructor(message: string, code: string = 'CAMPAIGN_ERROR', details?: Record<string, any>) {
-    super(message, code, details);
+export class AssetException extends DomainException {
+  constructor(message: string, code: string = 'ASSET_ERROR') {
+    super(message, code);
   }
 }
 ```
 
-3. **HTTP Exception Filters**:
-   - NestJS exception filters map `DomainException` subclasses to consistent HTTP response envelopes:
+3. **Error Envelopes**:
+   - gRPC error handling maps `DomainException` subclasses to consistent error responses with stable error codes:
 
 ```json
 {
   "success": false,
   "error": {
-    "code": "CAMPAIGN_INVALID_BUDGET",
-    "message": "Budget must be a positive number",
+    "code": "ASSET_INVALID_STATE",
+    "message": "Asset is in invalid state",
     "timestamp": "2026-07-23T22:00:00.000Z"
   }
 }

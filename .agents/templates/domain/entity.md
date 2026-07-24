@@ -1,7 +1,7 @@
 ---
 template: entity
 placeholders: [DomainName, EntityName, domainName, entityName]
-generates: src/core/entities/{{domainName}}-{{entityName}}.entity.ts
+generates: src/domain/entities/{{domainName}}-{{entityName}}.entity.ts
 ---
 
 # {{EntityName}} Entity Template
@@ -11,23 +11,32 @@ Domain entity belonging to {{DomainName}} Aggregate Root.
 ## Code Blueprint
 
 ```typescript
-// src/core/entities/{{domainName}}-{{entityName}}.entity.ts
-import { BaseEntity } from '../common';
+// src/domain/entities/{{domainName}}-{{entityName}}.entity.ts
+import { Entity } from '../base/base.entity';
 
-export interface {{EntityName}}Props {
+export interface {{EntityName}}EntityProps {
+  id: string;
   name: string;
   active: boolean;
 }
 
-export class {{EntityName}}Entity extends BaseEntity<{{EntityName}}Props> {
-  static create(props: {{EntityName}}Props): {{EntityName}}Entity {
+export class {{EntityName}}Entity extends Entity<{{EntityName}}EntityProps> {
+  protected constructor(props: {{EntityName}}EntityProps) {
+    super(props);
+  }
+
+  static create(props: Omit<{{EntityName}}EntityProps, 'id'>): {{EntityName}}Entity {
+    return new {{EntityName}}Entity({
+      ...props,
+      id: crypto.randomUUID(),
+    });
+  }
+
+  static rehydrateProps(props: {{EntityName}}EntityProps): {{EntityName}}Entity {
     return new {{EntityName}}Entity(props);
   }
 
-  static instantiate(id: string, props: {{EntityName}}Props): {{EntityName}}Entity {
-    return new {{EntityName}}Entity(props, id);
-  }
-
+  get id(): string { return this.props.id; }
   get name(): string { return this.props.name; }
   get active(): boolean { return this.props.active; }
 
@@ -36,3 +45,9 @@ export class {{EntityName}}Entity extends BaseEntity<{{EntityName}}Props> {
   }
 }
 ```
+
+## Post-Generation Checklist
+- [ ] Extends `Entity` (not `BaseEntity`)
+- [ ] `protected constructor`
+- [ ] `create()` and `rehydrateProps()` factory methods
+- [ ] File named `<name>.entity.ts`

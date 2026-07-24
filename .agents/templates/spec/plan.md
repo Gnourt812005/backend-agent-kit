@@ -6,26 +6,26 @@ generates: specs/{{FeatureNumber}}-{{featureName}}/plan.md
 
 # Architecture Implementation Plan: {{FeatureName}}
 
-**Feature**: `specs/{{FeatureNumber}}-{{featureName}}`  
-**Status**: proposed # proposed | approved  
+**Feature**: `specs/{{FeatureNumber}}-{{featureName}}`
+**Status**: proposed # proposed | approved
 
 ## 1. Technical Strategy & Architecture Impact
-- Selected patterns: Clean Architecture, Hexagonal, CQRS, Event-Driven
-- Target layer impact: Core, Application, Infrastructure, Presentation
+- Selected patterns: Clean Architecture, Hexagonal, DDD, CQRS, Event-Driven
+- Target layer impact: Domain, Applications, Infrastructure, API
 
 ## 2. Component Design Breakdown
 
-### Core Layer
+### Domain Layer
 - Aggregate Roots / Entities / VOs affected or created
 
-### Application Layer
+### Applications Layer
 - Commands and Queries to implement
 
 ### Infrastructure Layer
 - Database schemas, repository ports/adapters, outbox events
 
-### Presentation Layer
-- Controllers and endpoint routes
+### API Layer
+- gRPC Controllers and endpoint routes
 
 ## 3. Security & Safety Review
 - Auth guards, roles, input validation (Zod DTOs)

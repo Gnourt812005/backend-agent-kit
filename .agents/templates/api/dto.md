@@ -1,17 +1,17 @@
 ---
 template: api-dto
 placeholders: [FeatureName]
-generates: src/presentation/dtos/{{featureName}}.dto.ts
+generates: src/api/grpc/{{featureName}}.grpc.dto.ts
 ---
 
-# Presentation DTO Template
+# gRPC DTO Template
 
-Request/Response DTO for presentation API boundaries.
+Request/Response DTO for gRPC API boundaries.
 
 ## Code Blueprint
 
 ```typescript
-// src/presentation/dtos/{{featureName}}.dto.ts
+// src/api/grpc/{{featureName}}.grpc.dto.ts
 import { ApiProperty } from '@nestjs/swagger';
 
 export class {{FeatureName}}ResponseDto {
@@ -22,3 +22,8 @@ export class {{FeatureName}}ResponseDto {
   status: string;
 }
 ```
+
+## Post-Generation Checklist
+- [ ] File in `src/api/grpc/`
+- [ ] Uses `@nestjs/swagger` for documentation
+- [ ] Response DTO only (request DTOs use Zod schemas from `@applications/dtos/`)

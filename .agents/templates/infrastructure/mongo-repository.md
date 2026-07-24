@@ -1,61 +1,73 @@
 ---
 template: mongo-repository
 placeholders: [DomainName, domainName, DOMAIN_NAME]
-generates: src/infrastructure/mongo/repositories/{{domainName}}.repository.ts
+generates: src/infrastructure/persistence/mongoose/repositories/{{domainName}}.repository.ts
 ---
 
 # {{DomainName}} Mongo Repository Adapter Template
 
-Repository implementation of `I{{DomainName}}Repository` supporting Unit of Work database sessions.
+Repository implementation of `{{DomainName}}RepositoryPort` supporting Transaction Runner sessions.
 
 ## Code Blueprint
 
 ```typescript
-// src/infrastructure/mongo/repositories/{{domainName}}.repository.ts
+// src/infrastructure/persistence/mongoose/repositories/{{domainName}}.repository.ts
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { I{{DomainName}}Repository } from '../../../core/interfaces/repositories/{{domainName}}.repository';
-import { {{DomainName}}Root } from '../../../core/aggregate-roots/{{domainName}}.aggregate';
-import { {{DomainName}}Document, {{DomainName}}Model } from '../schemas/{{domainName}}.schema';
-import { MongoUow } from '../mongo-uow';
+import type { {{DomainName}}RepositoryPort } from '@domain/ports/repositories/{{domainName}}.repository.port';
+import { {{DomainName}}Root } from '@domain/aggregate-roots/{{domainName}}.root';
+import type { {{DomainName}}Document, {{DomainName}}Model } from '../schemas/{{domainName}}.schema';
 
 @Injectable()
-export class Mongo{{DomainName}}Repository implements I{{DomainName}}Repository {
+export class Mongo{{DomainName}}Repository implements {{DomainName}}RepositoryPort {
   constructor(
     @InjectModel({{DomainName}}Model.name) private readonly model: Model<{{DomainName}}Document>,
-    private readonly uow: MongoUow,
   ) {}
 
-  async findById(id: string): Promise<{{DomainName}}Root | null> {
-    const session = this.uow.getSession();
-    const doc = await this.model.findById(id).session(session).exec();
+  async findById(id: string, options?: { session?: unknown }): Promise<{{DomainName}}Root | null> {
+    const doc = await this.model
+      .findById(id)
+      .session(options?.session as Parameters<Model<any>['findById']>[1] | undefined)
+      .exec();
     if (!doc) return null;
 
-    // WHY: Map Mongoose document back to Aggregate Root using static instantiate()
-    return {{DomainName}}Root.instantiate(doc._id, {
+    // WHY: Map Mongoose document back to Aggregate Root using static rehydrateProps()
+    return {{DomainName}}Root.rehydrateProps({
+      id: doc._id.toString(),
       ownerId: doc.ownerId,
-      status: doc.status as any,
+      status: doc.status as E{{DomainName}}Status,
+      createdAt: doc.createdAt,
+      updatedAt: doc.updatedAt,
     });
   }
 
-  async save(aggregate: {{DomainName}}Root): Promise<void> {
-    const session = this.uow.getSession();
+  async save(aggregate: {{DomainName}}Root, options?: { session?: unknown }): Promise<{{DomainName}}Root> {
     await this.model.updateOne(
       { _id: aggregate.id },
       {
         $set: {
           owner_id: aggregate.ownerId,
           status: aggregate.status,
+          updated_at: aggregate.updatedAt,
+        },
+        $setOnInsert: {
+          created_at: aggregate.createdAt,
         },
       },
-      { upsert: true, session },
+      { upsert: true, session: options?.session as Parameters<Model<any>['updateOne']>[2] },
     );
+    return aggregate;
   }
 
   async delete(id: string): Promise<void> {
-    const session = this.uow.getSession();
-    await this.model.deleteOne({ _id: id }).session(session).exec();
+    await this.model.deleteOne({ _id: id }).exec();
   }
 }
 ```
+
+## Post-Generation Checklist
+- [ ] Implements `{Name}RepositoryPort`
+- [ ] `session` parameter passed to Mongoose operations
+- [ ] Uses `rehydrateProps()` for reconstitution
+- [ ] Uses `@domain/`, `@applications/` path aliases

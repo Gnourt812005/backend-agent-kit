@@ -11,10 +11,10 @@ Execute Phase 2 Logic Restoration. Read pending Refactor Notes in `docs/refactor
 2. Run skill [`refactor-engine`](../skills/refactor-engine/SKILL.md).
 3. Read target Refactor Note in `docs/refactor/`.
 4. Restore logic inside-out:
-   - **Step 1 Core**: Aggregate Root methods & VOs
-   - **Step 2 Infra**: Mongoose Schemas & Repository Adapters
-   - **Step 3 Application**: Command/Query Handlers + Unit of Work
-   - **Step 4 Presentation**: Controllers & Zod DTO Validation
+   - **Step 1 Domain**: Aggregate Root methods & VOs
+   - **Step 2 Infrastructure**: Mongoose Schemas & Repository Adapters
+   - **Step 3 Applications**: Command/Query Handlers + Transaction Runner
+   - **Step 4 API**: gRPC Controllers & Zod DTO Validation
 5. Run unit & E2E tests (`.agents/hooks/run-tests.sh`).
 6. Update Refactor Note status to `done`.
 

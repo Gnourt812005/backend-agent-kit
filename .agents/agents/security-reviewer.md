@@ -18,7 +18,7 @@ Review authentication/authorization, input sanitization, data exposure, secrets 
 - Guard configuration (`JwtAuthGuard`, `RolesGuard`, `ApiKeyGuard`)
 
 ## Focus Areas
-1. **Guard Stack Order**: `ApiKeyGuard` → `JwtAuthGuard` → `RolesGuard` → `UserVerifiedGuard`.
+1. **Guard Stack Order**: CASL-based authorization (`@sgod-casl/library`) with gRPC metadata guards.
 2. **Explicit Protection**: All endpoints protected by default unless decorated with `@Public()` or `@WebHook()`.
 3. **Data Protection**: Prevent PII leakage in logs, events, or response DTOs.
 4. **Injection Prevention**: Input validation via Zod schemas at presentation boundary.

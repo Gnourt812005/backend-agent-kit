@@ -19,12 +19,12 @@ Design REST/RPC endpoint contracts, request/response DTO shapes, Zod validation 
 
 ## Contract Rules
 1. **Thin Controllers**: Controllers validate input (DTOs) and dispatch Commands or Queries via CommandBus/QueryBus.
-2. **DTO Separation**: Presentation/Application DTOs never expose domain aggregates or internal schemas directly.
+2. **DTO Separation**: API/Application DTOs never expose domain aggregates or internal schemas directly.
 3. **Validation**: Use Zod schema validation via `createZodDto()`.
 4. **Error Envelopes**: Return structured error responses with stable error codes.
 
 ## Checklist
 - [ ] DTO schemas validated with Zod
-- [ ] HTTP status codes align with REST conventions (201 Created, 200 OK, 400 Bad Request, 404 Not Found)
-- [ ] Auth & Role decorators attached to endpoints
+- [ ] gRPC method decorators aligned with proto definitions
+- [ ] Auth & CASL decorators attached to endpoints
 - [ ] Contract documented in `docs/domains/<x>/api.md`

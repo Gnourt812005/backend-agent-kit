@@ -20,75 +20,94 @@ cat package.json | grep -E '"@nestjs|"mongoose|"zod|"jest|"vitest|"@nestjs/cqrs|
 
 Then fill in this table:
 
-### A. Directory Structure
+### A. Directory Structure (kit-asset-service)
 | Question | Your Answer |
 |----------|-------------|
-| What are your 4 layer directory names? (e.g., `src/core/`, `src/application/`, `src/infrastructure/`, `src/presentation/`) | |
-| Do you use any non-standard directories? (e.g., `src/shared/`, `src/common/`) | |
+| What are your 4 layer directory names? | `src/domain/`, `src/applications/`, `src/infrastructure/`, `src/api/` |
+| Do you use any non-standard directories? | `src/shared/`, `src/api/grpc/`, `src/api/kafka/`, `src/api/mappers/`, `src/infrastructure/events/outbox/`, `src/infrastructure/elasticsearch/`, `src/infrastructure/authz/`, `src/infrastructure/cache/`, `src/infrastructure/scheduling/` |
 
-### B. Naming Conventions
+### B. Naming Conventions (kit-asset-service)
 | Question | Your Answer |
 |----------|-------------|
-| Aggregate Root class suffix? (e.g., `CampaignRoot`, `CampaignAggregate`) | |
-| Value Object suffix? (e.g., `CampaignVO`, `CampaignValueObject`) | |
-| Repository interface prefix? (e.g., `ICampaignRepository`, `CampaignRepository`) | |
-| DI tokens? (e.g., `Symbol('CAMPAIGN_REPOSITORY')`, `'CAMPAIGN_REPOSITORY'`) | |
-| Exception base class? (e.g., `DomainException`, `AppError`) | |
-| Command handler suffix? (e.g., `CreateCampaignHandler`, `CreateCampaignCommandHandler`) | |
+| Aggregate Root class suffix? | `{Name}Root` (e.g., `AssetRoot`, `AssetCategoryRoot`) |
+| Aggregate Root file pattern? | `{name}.root.ts` |
+| Value Object suffix? | `{Name}VO` (e.g., `QuantityVO`, `QRCodeVO`) |
+| Value Object file pattern? | `{name}.vo.ts` |
+| Entity suffix? | `{Name}Entity` (e.g., `ImportRowEntity`) |
+| Entity file pattern? | `{name}.entity.ts` |
+| Repository interface suffix? | `{Name}RepositoryPort` (e.g., `AssetRepositoryPort`) |
+| Repository file pattern? | `{name}.repository.port.ts` |
+| Read repository suffix? | `{Name}ReadRepositoryPort` (e.g., `AssetReadRepositoryPort`) |
+| Read repository file pattern? | `{name}-read.repository.port.ts` |
+| DI tokens? | `Symbol('NAME_REPOSITORY')` (e.g., `Symbol('ASSET_REPOSITORY')`) |
+| Exception base class? | `DomainException` in `src/domain/exceptions/domain.exception.ts` |
+| Command handler suffix? | `{Feature}Handler` (e.g., `AssetCreateHandler`) |
+| Command handler file pattern? | `{feature}.handler.ts` |
+| Command class? | `{Feature}Command extends Command<Dto>` |
+| Enum prefix? | `E{Name}` (e.g., `EAssetType`) |
+| Domain Event suffix? | `{Name}Event` (e.g., `AssetCreatedEvent`) |
+| Domain Event file pattern? | `{name}.event.ts` |
 
-### C. Base Classes
+### C. Base Classes (kit-asset-service)
 | Question | Your Answer |
 |----------|-------------|
-| Aggregate Root base class name & path? (e.g., `BaseAggregateRoot` in `src/core/common/`) | |
-| Entity base class name & path? | |
-| Value Object base class name & path? | |
-| Domain Event base class name & path? | |
-| Unit of Work interface name & path? (e.g., `IUnitOfWork` in `src/core/interfaces/`) | |
-| Event Service interface name & path? | |
+| Aggregate Root base class name & path? | `AggregateRoot` in `src/domain/base/base.entity.ts` |
+| Entity base class name & path? | `Entity` in `src/domain/base/base.entity.ts` |
+| Value Object base class name & path? | `BaseValueObject` in `src/domain/base/base.value-object.ts` |
+| Domain Event base class name & path? | `DomainEvent` in `src/domain/events/domain-event.base.ts` |
+| Unit of Work interface name & path? | `MongoTransactionRunnerPort` in `src/domain/ports/services/mongo-transaction-runner.port.ts` |
+| Event Service interface name & path? | `IEventService` in `src/applications/ports/event-service.interface.ts` |
 
-### D. Framework Patterns
+### D. Framework Patterns (kit-asset-service)
 | Question | Your Answer |
 |----------|-------------|
-| Validation library? (e.g., `nestjs-zod`, `class-validator`) | |
-| Test framework? (e.g., `jest`, `vitest`) | |
-| Swagger/OpenAPI? (e.g., `@nestjs/swagger`) | |
-| Guard stack order? (e.g., `JwtAuthGuard` → `RolesGuard`) | |
-| Outbox implementation? (e.g., MongoDB collection, PostgreSQL table) | |
+| Validation library? | `nestjs-zod` (DTOs re-export Zod schemas from `@applications/dtos/`) |
+| Test framework? | `jest` |
+| Swagger/OpenAPI? | Not used (gRPC + Kafka, not REST) |
+| Guard stack order? | CASL-based (`@sgod-casl/library`) |
+| Outbox implementation? | MongoDB collection in `src/infrastructure/events/outbox/` |
+| Path aliases? | `@domain/`, `@applications/`, `@shared/`, `@api/`, `@infrastructure/`, `@app/`, `@security/` |
+| Company packages? | `@sgod-casl/library`, `@sgod-elastic/library`, `@sgod-graphdb/library`, `@sgod-kafka/library`, `@sgod-mongodb/library`, `@sgod-redis/library` |
+| UoW method? | `runInTransaction(fn: (session) => Promise<T>)` (not `uow.execute()`) |
+| Event service method? | `publishEvents(aggregates, session?)` |
+| DTO pattern? | Re-export Zod schemas from `@applications/dtos/` |
+| Module pattern? | Uses `PersistenceModule`, `IntegrationsModule` imports; handlers as arrays |
 
 ---
 
 ## Phase 1: Customize .agents Rules & Templates
 
 ### 1. Update `naming.md`
-- Update the class/file naming matrix to match your project's actual suffixes and directory paths
-- Update the Symbol DI token format
-- Update the database schema field naming convention
+- Change `src/core/` → `src/domain/` for all Core layer paths
+- Change `src/application/` → `src/applications/` for Application layer
+- Change `src/presentation/` → `src/api/` for Presentation layer
+- Change `src/core/interfaces/repositories/` → `src/domain/ports/repositories/`
+- Change `src/core/interfaces/read-services/` → `src/domain/ports/repositories/read/`
+- Change `src/core/interfaces/unit-of-work.interface` → `src/domain/ports/services/mongo-transaction-runner.port.ts`
+- Change `src/core/interfaces/event-service.interface` → `src/applications/ports/event-service.interface.ts`
+- Update class suffixes: `{Domain}Root` → `{Name}Root`, `I{Name}Repository` → `{Name}RepositoryPort`, `{Name}VO` stays
+- Update file patterns: `{domain}.aggregate.ts` → `{name}.root.ts`, `{name}.repository.ts` → `{name}.repository.port.ts`
+- Update DI token format: stays `Symbol('NAME_REPOSITORY')`
 
 ### 2. Update Templates
 For each template in `.agents/templates/`:
-- Update import paths to match your base class locations
-- Update class names to match your naming conventions
-- Update validation patterns to match your validation library
-- Update guard/decorator patterns to match your security setup
-
-Key templates to update:
-- `domain/aggregate.md` — Base class imports, factory patterns
-- `domain/entity.md` — Base class imports
-- `domain/value-object.md` — Base class imports
-- `domain/domain-event.md` — Base class imports
-- `application/command-handler.md` — UoW/EventService import paths
-- `application/query-handler.md` — ReadService import paths
-- `infrastructure/module.md` — Module wiring, DI token imports
-- `infrastructure/mongo-repository.md` — UoW import path, session handling
-- `api/controller.md` — Guard/decorator patterns, Swagger decorators
+- Update import paths to use `@domain/`, `@applications/`, `@shared/`, `@api/`, `@infrastructure/` aliases
+- Update base class names: `BaseAggregateRoot` → `AggregateRoot`, `BaseEntity` → `Entity`, `BaseValueObject` stays
+- Update repository port names: `I{Name}Repository` → `{Name}RepositoryPort`
+- Update UoW: `IUnitOfWork` / `uow.execute()` → `MongoTransactionRunnerPort` / `mongoTx.runInTransaction()`
+- Update event service: `IEventService` / `publishEvents(aggregate)` → `IEventService` / `publishEvents(aggregates, session)`
+- Update DTO pattern: inline Zod schemas → re-export from `@applications/dtos/`
+- Update module pattern: inline `MongooseModule.forFeature` → `PersistenceModule` import
+- Update controller pattern: REST → gRPC (`@GrpcMethod`, proto-based)
+- Update guard pattern: `RolesGuard` → CASL-based (`@sgod-casl/library`)
 
 ### 3. Update Hooks
-- `validate-boundaries.sh` — Update regex patterns to match your directory structure
-- `validate-imports.sh` — Update regex patterns to match your import paths
-- `check-health.py` — Update `CORE_FORBIDDEN` and `APP_FORBIDDEN` lists to match your stack
+- `validate-boundaries.sh` — Change `src/core` → `src/domain` in regex
+- `validate-imports.sh` — Change `src/application` → `src/applications` in regex
+- `check-health.py` — Update `CORE_FORBIDDEN` and `APP_FORBIDDEN` lists to match `@sgod-*` packages and `@domain/` aliases
 
 ### 4. Update `docs/architecture/service.md`
-- Update the service identity, runtime stack, and deployment config to match your project
+- Update service identity, runtime stack (gRPC + Kafka, not REST), and deployment config
 
 ---
 
@@ -98,10 +117,10 @@ Key templates to update:
 1. Activate `architect` and `code-reviewer` agents
 2. Run `refactor-engine` skill
 3. Move messy files into `.agents/` layers:
-   - Domain logic → `src/core/`
-   - Use cases → `src/application/`
+   - Domain logic → `src/domain/`
+   - Use cases → `src/applications/`
    - Schemas & Repos → `src/infrastructure/`
-   - Controllers → `src/presentation/`
+   - Controllers → `src/api/`
 4. Apply Decision Matrix:
    - Blank out DB calls, external calls, and entangled rules
    - Insert inline backlink: `// see: docs/refactor/YYYYMMDD-seq-name.md`
@@ -111,10 +130,10 @@ Key templates to update:
 ### Phase 2: Logic Restoration (`refactor-restore`)
 1. Read pending Refactor Notes in `docs/refactor/`
 2. Restore logic inside-out:
-   - **Step 1 Core**: Aggregate Root methods & VOs
-   - **Step 2 Infra**: Mongoose Schemas & Repository Adapters
-   - **Step 3 Application**: Command/Query Handlers + Unit of Work
-   - **Step 4 Presentation**: Controllers & Zod DTO Validation
+   - **Step 1 Domain**: Aggregate Root methods & VOs
+   - **Step 2 Infrastructure**: Mongoose Schemas & Repository Adapters
+   - **Step 3 Applications**: Command/Query Handlers + Transaction Runner
+   - **Step 4 API**: gRPC Controllers & Zod DTO Validation
 3. Run unit & E2E tests
 4. Mark Refactor Notes as `done`
 

@@ -13,12 +13,12 @@ Add a new CQRS command handler or query handler to an existing domain.
 4. Run skill [`cqrs-generator`](../skills/cqrs-generator/SKILL.md).
 5. Generate code from templates:
    - If Command:
-     - [`templates/application/command.md`](../templates/application/command.md) → `src/application/commands/<name>/<name>.command.ts`
-     - [`templates/application/dto.md`](../templates/application/dto.md) → `src/application/commands/<name>/<name>.dto.ts`
-     - [`templates/application/command-handler.md`](../templates/application/command-handler.md) → `src/application/commands/<name>/<name>.handler.ts`
+     - [`templates/application/command.md`](../templates/application/command.md) → `src/applications/commands/<name>/<name>.command.ts`
+     - [`templates/application/dto.md`](../templates/application/dto.md) → `src/applications/dtos/<name>.dto.ts`
+     - [`templates/application/command-handler.md`](../templates/application/command-handler.md) → `src/applications/commands/<name>/<name>.handler.ts`
    - If Query:
-     - [`templates/application/query.md`](../templates/application/query.md) → `src/application/queries/<name>/<name>.query.ts`
-     - [`templates/application/query-handler.md`](../templates/application/query-handler.md) → `src/application/queries/<name>/<name>.handler.ts`
+     - [`templates/application/query.md`](../templates/application/query.md) → `src/applications/queries/<name>/<name>.query.ts`
+     - [`templates/application/query-handler.md`](../templates/application/query-handler.md) → `src/applications/queries/<name>/<name>.handler.ts`
 6. Register handler in `<domain>.module.ts` providers.
 7. Update `docs/domains/<domain>/api.md` with new use case details.
 8. Run [`after-generate.sh`](../hooks/after-generate.sh).

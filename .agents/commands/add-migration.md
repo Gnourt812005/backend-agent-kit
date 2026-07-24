@@ -8,7 +8,7 @@ Create a database migration or schema evolution script for data model changes.
 
 ## Steps
 1. Activate [`database-engineer`](../agents/database-engineer.md) agent.
-2. Read target domain schema in `src/infrastructure/mongo/schemas/` or `docs/domains/<domain>/domain.md`.
+2. Read target domain schema in `src/infrastructure/persistence/mongoose/schemas/` or `docs/domains/<domain>/domain.md`.
 3. Create migration script in `src/infrastructure/mongo/migrations/`.
 4. Ensure migration contains both `up()` (apply) and `down()` (rollback) steps.
 5. Update `docs/domains/<domain>/domain.md` schema documentation.

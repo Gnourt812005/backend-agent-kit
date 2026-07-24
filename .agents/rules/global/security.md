@@ -7,11 +7,10 @@ description: Security constraints, auth guard order, data masking, and secret ha
 
 ## Guard Stack Execution Order
 
-In NestJS controllers, guards execute in a strict order:
-1. `ApiKeyGuard` (Header API key verification for service-to-service calls)
-2. `JwtAuthGuard` (JWT Bearer token verification)
-3. `RolesGuard` (Role-based access control `@Roles(ERole.ADMIN)`)
-4. `UserVerifiedGuard` (Account status verification)
+In NestJS gRPC controllers, authorization is handled via CASL-based guards:
+1. `GrpcMetadataGuard` (Extracts actor identity from gRPC metadata)
+2. `CaslAbilityGuard` (Checks `@CheckAbility()` permissions)
+3. `UserVerifiedGuard` (Account status verification)
 
 ## Public & Webhook Exceptions
 
