@@ -1,3 +1,8 @@
+---
+name: review-architecture
+description: Audit the codebase for architectural drift using a Git-anchored incremental health check, categorizing violations as NEW, PERSISTING, or RESOLVED since the last baseline.
+---
+
 # Command: review-architecture
 
 ## Intent

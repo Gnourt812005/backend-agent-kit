@@ -1,3 +1,8 @@
+---
+name: init-project
+description: Initialize the project documentation scaffold under docs/ including service.md, glossary, ADR 001, and domain template — run once before any code generation.
+---
+
 # Command: init-project
 
 ## Intent

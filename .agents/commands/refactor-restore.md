@@ -1,3 +1,8 @@
+---
+name: refactor-restore
+description: Phase 2 of legacy refactoring — read pending Refactor Notes, re-implement blanked logic inside-out into correct layers, run tests, and mark notes as done.
+---
+
 # Command: refactor-restore
 
 ## Intent

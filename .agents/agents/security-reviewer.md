@@ -1,3 +1,8 @@
+---
+name: security-reviewer
+description: Audits authentication/authorization, input sanitization, data exposure, secrets management, and threat surfaces.
+---
+
 # Security Reviewer Agent
 
 ## Role

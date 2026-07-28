@@ -1,3 +1,8 @@
+---
+name: add-use-case
+description: Add a new CQRS command handler (write) or query handler (read) to an existing domain, including DTO validation and module provider registration.
+---
+
 # Command: add-use-case
 
 ## Intent

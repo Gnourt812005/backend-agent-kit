@@ -1,3 +1,8 @@
+---
+name: init-session
+description: Warm up and anchor the agent session to .agents/ conventions by loading architecture rules, naming standards, and layer constraints — run at the start of every session.
+---
+
 # Command: init-session
 
 ## Intent

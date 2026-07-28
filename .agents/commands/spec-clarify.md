@@ -1,3 +1,8 @@
+---
+name: spec-clarify
+description: Audit specs/NNN-<name>/spec.md for underspecified areas and ask up to 3 targeted clarification questions before proceeding to architecture planning.
+---
+
 # Command: spec-clarify
 
 ## Intent

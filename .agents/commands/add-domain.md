@@ -1,3 +1,8 @@
+---
+name: add-domain
+description: Scaffold a complete new business domain including Aggregate Root, Entities, Value Objects, Domain Events, Repository Ports, Mongoose Schema, Repository Adapter, NestJS Module, and gRPC Controller.
+---
+
 # Command: add-domain
 
 ## Intent

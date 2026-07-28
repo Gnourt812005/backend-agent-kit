@@ -1,3 +1,8 @@
+---
+name: repair-kit
+description: Validate all markdown relative file links across .agents/ and auto-repair broken references using validate-links.py.
+---
+
 # Command: repair-kit
 
 ## Intent

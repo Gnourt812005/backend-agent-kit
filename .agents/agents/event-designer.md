@@ -1,3 +1,8 @@
+---
+name: event-designer
+description: Designs domain events, integration events, transactional outbox producers, and idempotent message queue consumers.
+---
+
 # Event Designer Agent
 
 ## Role

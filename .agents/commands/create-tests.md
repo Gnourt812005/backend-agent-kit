@@ -1,3 +1,8 @@
+---
+name: create-tests
+description: Generate Jest unit tests for domain aggregates and application handlers, plus integration/E2E tests for gRPC controllers.
+---
+
 # Command: create-tests
 
 ## Intent

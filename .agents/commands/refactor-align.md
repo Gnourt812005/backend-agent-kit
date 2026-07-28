@@ -1,3 +1,8 @@
+---
+name: refactor-align
+description: Phase 1 of legacy refactoring — restructure messy modules into Clean/Hexagonal layers, blank tangled logic, insert inline backlinks, and write Refactor Notes in docs/refactor/.
+---
+
 # Command: refactor-align
 
 ## Intent

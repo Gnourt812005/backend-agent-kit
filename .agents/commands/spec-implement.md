@@ -1,3 +1,8 @@
+---
+name: spec-implement
+description: Execute tasks.md sequentially item by item, marking each completed immediately to support seamless resumption after session interruption.
+---
+
 # Command: spec-implement
 
 ## Intent

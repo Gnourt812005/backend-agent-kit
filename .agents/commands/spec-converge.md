@@ -1,3 +1,8 @@
+---
+name: spec-converge
+description: Verify completed implementation against spec.md, sync domain changes back to permanent docs/domains/, and lock the spec directory as an immutable historical record.
+---
+
 # Command: spec-converge
 
 ## Intent

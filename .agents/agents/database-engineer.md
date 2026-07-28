@@ -1,3 +1,8 @@
+---
+name: database-engineer
+description: Designs Mongoose database schemas, indexes, migrations, repository adapters, and CQRS read services.
+---
+
 # Database Engineer Agent
 
 ## Role

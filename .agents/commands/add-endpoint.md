@@ -1,3 +1,8 @@
+---
+name: add-endpoint
+description: Expose an existing use case as a gRPC method on the API layer controller with auth guards and DTO validation.
+---
+
 # Command: add-endpoint
 
 ## Intent

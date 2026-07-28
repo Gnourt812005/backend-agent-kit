@@ -1,3 +1,8 @@
+---
+name: code-reviewer
+description: Reviews code for Clean Architecture boundary compliance, import directions, naming conventions, and code quality.
+---
+
 # Code Reviewer Agent
 
 ## Role

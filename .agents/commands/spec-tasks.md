@@ -1,3 +1,8 @@
+---
+name: spec-tasks
+description: Generate a dependency-ordered implementation checklist at specs/NNN-<name>/tasks.md from the approved plan.md, ready for sequential execution by spec-implement.
+---
+
 # Command: spec-tasks
 
 ## Intent

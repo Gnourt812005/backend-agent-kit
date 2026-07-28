@@ -1,3 +1,8 @@
+---
+name: add-migration
+description: Create a database migration or schema evolution script to handle data model changes in MongoDB.
+---
+
 # Command: add-migration
 
 ## Intent

@@ -1,3 +1,8 @@
+---
+name: spec-specify
+description: Create a new feature spec directory at specs/NNN-<name>/spec.md from a natural language request, capturing functional requirements, acceptance scenarios, and business rules.
+---
+
 # Command: spec-specify
 
 ## Intent

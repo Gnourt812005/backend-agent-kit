@@ -1,3 +1,8 @@
+---
+name: add-tech
+description: Integrate a new infrastructure technology (Redis, WebSocket, RabbitMQ, Cloudinary, etc.) into the codebase, documenting the decision in docs/tech/ and wiring the adapter.
+---
+
 # Command: add-tech
 
 ## Intent

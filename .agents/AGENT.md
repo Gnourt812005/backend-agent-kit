@@ -17,7 +17,7 @@ Help engineers create backend modules that are:
 1. **Read context first** — load `docs/architecture/service.md` and relevant domain docs under `docs/domains/` before generating code.
 2. **Select architecture** — use skill [`architecture-selector`](skills/architecture-selector/SKILL.md) unless the project already declares one in `docs/architecture/decisions/`.
 3. **Delegate to specialists** — route work to agents in [`.agents/agents/`](agents/) by concern.
-4. **Follow rules** — apply [`.agents/rules/global/`](rules/global/) always; load language/framework/architecture rules as needed.
+4. **Follow rules** — apply [`.agents/rules/global/`](rules/global/) always. Load language, framework, and architecture rules (e.g. `rules/languages/typescript.md`, `rules/frameworks/nestjs.md`, `rules/architectures/*.md`) as needed during implementation.
 5. **Use templates** — generate code and docs from [`.agents/templates/`](templates/); never invent ad-hoc layering.
 6. **Maintain documentation** — update `docs/` when introducing new domains, endpoints, events, or architecture decisions.
 7. **Validate** — run hooks under [`.agents/hooks/`](hooks/) after generation when possible.

@@ -1,3 +1,8 @@
+---
+name: api-designer
+description: Designs gRPC endpoint contracts, request/response DTO shapes, Zod validation schemas, and API layer guards.
+---
+
 # API Designer Agent
 
 ## Role

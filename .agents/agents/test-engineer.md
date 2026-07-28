@@ -1,3 +1,8 @@
+---
+name: test-engineer
+description: Designs test strategies, unit tests for domain/application layers, integration tests for adapters, and coverage gates.
+---
+
 # Test Engineer Agent
 
 ## Role

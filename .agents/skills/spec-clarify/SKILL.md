@@ -13,3 +13,4 @@ description: Identifies underspecified areas or ambiguities in specs/NNN-<name>/
    - Formulate **up to 3 targeted, high-impact clarification questions**.
    - Present options clearly to the user.
 4. Once user responds, encode answers into `spec.md` and set frontmatter `status: approved`.
+5. If the resolved answers change feature boundaries or external dependencies, re-sync `specs/NNN-<name>/ref.md` to reflect these updates.

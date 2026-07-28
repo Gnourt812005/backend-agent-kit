@@ -1,3 +1,8 @@
+---
+name: domain-modeler
+description: Designs aggregates, entities, value objects, domain events, and business invariants following Domain-Driven Design (DDD) tactical patterns.
+---
+
 # Domain Modeler Agent
 
 ## Role

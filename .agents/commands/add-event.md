@@ -1,3 +1,8 @@
+---
+name: add-event
+description: Add a domain event or integration event with Transactional Outbox publishing or RabbitMQ consumer, including schema documentation in docs/domains/<x>/events.md.
+---
+
 # Command: add-event
 
 ## Intent

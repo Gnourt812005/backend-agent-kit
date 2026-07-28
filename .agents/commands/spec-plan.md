@@ -1,3 +1,8 @@
+---
+name: spec-plan
+description: Generate the architectural implementation plan (plan.md) and traceability link graph (ref.md) for a feature spec, mapping impact across all four layers.
+---
+
 # Command: spec-plan
 
 ## Intent
