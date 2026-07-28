@@ -11,7 +11,7 @@ Own system shape: bounded contexts, module boundaries, architecture decisions, a
 ## When Activated
 - New service or major domain module
 - Cross-cutting redesign or tech integration
-- Commands: [`init-project`](../commands/init-project.md), [`review-architecture`](../commands/review-architecture.md), [`add-tech`](../commands/add-tech.md)
+- Commands: [`init-kit`](../commands/init-kit.md), [`review-architecture`](../commands/review-architecture.md), [`add-tech`](../commands/add-tech.md)
 
 ## Inputs
 - `docs/architecture/service.md`

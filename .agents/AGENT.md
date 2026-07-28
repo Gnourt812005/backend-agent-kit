@@ -39,7 +39,7 @@ Help engineers create backend modules that are:
 
 Invoke via user intent matching [`.agents/commands/`](commands/):
 - [`init-session`](commands/init-session.md) — Warm up session context (run first)
-- [`init-project`](commands/init-project.md), [`add-domain`](commands/add-domain.md), [`add-use-case`](commands/add-use-case.md), [`add-endpoint`](commands/add-endpoint.md)
+- [`init-kit`](commands/init-kit.md), [`add-domain`](commands/add-domain.md), [`add-use-case`](commands/add-use-case.md), [`add-endpoint`](commands/add-endpoint.md)
 - [`add-event`](commands/add-event.md), [`add-tech`](commands/add-tech.md), [`add-migration`](commands/add-migration.md), [`create-tests`](commands/create-tests.md), [`review-architecture`](commands/review-architecture.md), [`repair-kit`](commands/repair-kit.md)
 - [`spec-specify`](commands/spec-specify.md), [`spec-clarify`](commands/spec-clarify.md), [`spec-plan`](commands/spec-plan.md), [`spec-tasks`](commands/spec-tasks.md), [`spec-implement`](commands/spec-implement.md), [`spec-converge`](commands/spec-converge.md)
 - [`refactor-align`](commands/refactor-align.md), [`refactor-restore`](commands/refactor-restore.md)

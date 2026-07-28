@@ -1,0 +1,13 @@
+# .agents/kit.toml
+# Kit configuration status — tracks whether .agents/ has been initialized for this project.
+# Created/updated by `init-kit` command. Read by `init-session` command.
+
+[kit]
+status = "fresh"             # "fresh" | "configured"
+mode = ""                    # "new-project" | "adapt-existing"
+initialized_at = ""          # ISO 8601 date when init-kit was last run
+
+[project]
+name = ""                    # Service/project name
+language = ""                # e.g., "typescript", "go", "python"
+framework = ""               # e.g., "nestjs", "gin", "fastapi"

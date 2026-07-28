@@ -24,7 +24,7 @@ These components are specialized for **TypeScript + NestJS + Hexagonal Architect
 
 * **Root Entrypoint**: [`AGENT.md`](AGENT.md)
 * **Specialist Agents**: [`architect`](agents/architect.md), [`domain-modeler`](agents/domain-modeler.md), [`api-designer`](agents/api-designer.md), [`database-engineer`](agents/database-engineer.md), [`event-designer`](agents/event-designer.md), [`security-reviewer`](agents/security-reviewer.md), [`test-engineer`](agents/test-engineer.md), [`code-reviewer`](agents/code-reviewer.md)
-* **Foundation Commands**: [`init-project`](commands/init-project.md), [`add-domain`](commands/add-domain.md), [`add-use-case`](commands/add-use-case.md), [`add-endpoint`](commands/add-endpoint.md), [`add-event`](commands/add-event.md), [`add-tech`](commands/add-tech.md), [`add-migration`](commands/add-migration.md), [`create-tests`](commands/create-tests.md)
+* **Foundation Commands**: [`init-kit`](commands/init-kit.md), [`add-domain`](commands/add-domain.md), [`add-use-case`](commands/add-use-case.md), [`add-endpoint`](commands/add-endpoint.md), [`add-event`](commands/add-event.md), [`add-tech`](commands/add-tech.md), [`add-migration`](commands/add-migration.md), [`create-tests`](commands/create-tests.md)
 * **Specialized Skills**: [`cqrs-generator`](skills/cqrs-generator/SKILL.md), [`repository-design`](skills/repository-design/SKILL.md), [`uow-outbox`](skills/uow-outbox/SKILL.md), [`api-contract-design`](skills/api-contract-design/SKILL.md), [`event-contract-design`](skills/event-contract-design/SKILL.md), [`domain-modeling`](skills/domain-modeling/SKILL.md), [`security-review`](skills/security-review/SKILL.md), [`testing-strategy`](skills/testing-strategy/SKILL.md)
 * **Specialized Blueprints**: [`templates/domain/`](templates/domain/aggregate.md), [`templates/application/`](templates/application/command-handler.md), [`templates/infrastructure/`](templates/infrastructure/mongoose-schema.md), [`templates/api/`](templates/api/controller.md)
 * **Architecture Boundary Hooks**:
@@ -35,11 +35,11 @@ These components are specialized for **TypeScript + NestJS + Hexagonal Architect
 
 ---
 
-## ♻️ 2. Universal Reusable Meta-Kits (Tech-Stack & Framework Agnostic)
+## ♻️ 2. Universal Reusable Meta-Kits (Mostly Stack-Agnostic)
 
-These kits handle workflow lifecycle, specification, refactoring, and health check logic. **They do not depend on any specific language or framework** and remain untouched when switching or upgrading tech stack agents in the future.
+These kits handle workflow lifecycle, specification, refactoring, and health check logic. **The workflow logic (commands, skills) is stack-agnostic**, but the templates they reference (specs, tasks, refactor notes, health reports) may carry project-specific path conventions, layer names, or file patterns from adaptation. When switching stacks, review these templates too — they're easy to update.
 
-### A. 📋 Universal Spec-Driven Development Kit (`specs/`)
+### A. 📋 Spec-Driven Development Kit (`specs/`)
 Handles complex multi-step feature development with granular task tracking and a traceability graph (`ref.md`).
 
 * **Commands**:
@@ -94,7 +94,7 @@ On-demand Git-anchored incremental health audits detecting architectural drift.
 
 ## 🛠️ 3. Adapting & Customizing the Kit for New Demands
 
-When adapting this kit for a **new project demand** (e.g. switching to **Go + Gin + PostgreSQL**, **Python + FastAPI**, or a different architecture style), developers only need to customize **Section 1 (The Stack Layer)** while **Section 2 (The Universal Meta-Kits)** stays completely untouched.
+When adapting this kit for a **new project demand** (e.g. switching to **Go + Gin + PostgreSQL**, **Python + FastAPI**, or a different architecture style), start with **Section 1 (The Stack Layer)** — this is where the bulk of the work is. The meta-kit workflows (spec-*, refactor-*, etc.) stay as-is, but their **templates** may reference project-specific paths from a previous adaptation and should be reviewed.
 
 ### 📋 Customization Checklist
 
@@ -106,7 +106,8 @@ When adapting this kit for a **new project demand** (e.g. switching to **Go + Gi
 | **`skills/`** | ✏️ Replace | Replace stack-specific skills (`cqrs-generator`, `repository-design`, `uow-outbox`) with skills matching the new stack libraries (e.g. `gorm-repository` or `sqlalchemy`). |
 | **`commands/`** | ✏️ Update | Update `add-domain.md`, `add-use-case.md`, and `add-endpoint.md` to reference the new templates and file target paths. |
 | **`hooks/`** | ✏️ Update | Edit `validate-boundaries.sh` and `validate-imports.sh` regex patterns to match the new folder structure. |
-| **Meta-Kits** | 🔒 **Keep Untouched** | **Do not modify** `spec-*`, `refactor-*`, `review-architecture`, or `repair-kit`. They work identically on any stack. |
+| **Meta-kit templates** | 🔍 **Review** | `templates/spec/*`, `templates/refactor/*`, `templates/health/*` — the workflow logic is stack-agnostic, but these templates may contain path references from a previous project adaptation. Update paths if needed. |
+| **Meta-kit commands & skills** | 🔒 **Keep** | `spec-*`, `refactor-*`, `review-architecture`, `repair-kit` commands and skills — their workflow logic is fully stack-agnostic and needs no changes. |
 
 ### 🛠️ Post-Customization Check
 After customizing `.agents/` for a new stack, run the self-repair command to verify all markdown links resolve cleanly:
