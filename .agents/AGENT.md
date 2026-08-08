@@ -19,7 +19,7 @@ Help engineers create backend modules that are:
 3. **Delegate to specialists** — route work to agents in [`.agents/agents/`](agents/) by concern.
 4. **Follow rules** — apply [`.agents/rules/global/`](rules/global/) always. Load language, framework, and architecture rules (e.g. `rules/languages/typescript.md`, `rules/frameworks/nestjs.md`, `rules/architectures/*.md`) as needed during implementation.
 5. **Use templates** — generate code and docs from [`.agents/templates/`](templates/); never invent ad-hoc layering.
-6. **Maintain documentation** — update `docs/` when introducing new domains, endpoints, events, or architecture decisions.
+6. **Maintain documentation** — update `docs/` when introducing new domains, endpoints, events, or architecture decisions. Whenever you reject a plausible alternative, record why: cross-domain/architectural calls go in an ADR (`docs/architecture/decisions/`, `templates/docs/adr.md` — has an "Alternatives Considered" section), single-domain calls go in that domain's `domain.md` §10 Decisions. This is plain committed markdown, readable by any agent working in this repo — not Claude Code's private, machine-local auto memory, which is fine for personal build-command/debugging notes but wrong for anything another agent or teammate needs to see.
 7. **Validate** — run hooks under [`.agents/hooks/`](hooks/) after generation when possible.
 
 ## Agent Roster

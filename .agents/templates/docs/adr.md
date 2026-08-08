@@ -12,6 +12,11 @@
 ## Decision
 <!-- The chosen architectural direction or pattern -->
 
+## Alternatives Considered
+<!-- Every plausible option that was rejected, and why. This is the record other agents and engineers check before re-proposing something already ruled out. -->
+| Option | Why Rejected |
+|--------|--------------|
+
 ## Consequences
 ### Positive
 -

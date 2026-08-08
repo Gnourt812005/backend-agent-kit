@@ -111,3 +111,9 @@ gRPC Controller → Zod DTO → CommandBus → Handler (TxRunner) → {{DomainNa
 1. State changes MUST occur through Aggregate Root methods.
 2. Database writes and outbox events MUST be executed inside Transaction Runner.
 3. Read queries MUST bypass Aggregate Roots and use Read Repository Ports.
+
+## 10. Decisions
+<!-- Domain-scoped choices that rejected a plausible alternative, but aren't big enough for a full ADR (those go in docs/architecture/decisions/ instead). One row per decision. -->
+
+| Date | Decision | Rejected Alternative(s) | Why |
+|------|----------|--------------------------|-----|

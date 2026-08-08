@@ -5,7 +5,7 @@ description: Generate or update comprehensive Clean Architecture domain document
 
 # Write Domain Documentation Skill
 
-This skill creates or updates a domain specification in `docs/domains/<domain>/domain.md` following the 4-layer pattern (Core → Application → Infrastructure → Presentation).
+This skill creates or updates a domain specification in `docs/domains/<domain>/domain.md` following the structure defined in [`templates/docs/domain.md`](../../templates/docs/domain.md) — 10 mandatory sections (Overview → Domain Layer → State Machines → Applications Layer → Infrastructure Layer → API Layer → E2E Flows → File Map → Key Invariants → Decisions). Do not invent, skip, or reorder sections; render the template as-is and fill it in.
 
 ## Modes of Operation
 
@@ -23,78 +23,17 @@ status: draft # draft | reviewed | approved
 ---
 ```
 
-## Mandatory 9-Section Structure
+## Section 10 — Decisions
 
-The generated document MUST contain these 9 sections:
-
-```markdown
-# {Domain} Domain Specification
-
-## 1. Domain Overview
-- **Purpose**: Business problem solved
-- **Bounded Context**: Domain boundary and ownership
-- **Key Concepts**: Table of core nouns and definitions
-- **Relations**: Dependencies on other domains
-
-## 2. Core Layer
-- **Aggregate Root**: `{Domain}Root` (`src/core/aggregate-roots/<domain>.aggregate.ts`)
-- **Entities**: Identifiable sub-components (`src/core/entities/`)
-- **Value Objects**: Immutable attributes (`src/core/value-objects/`)
-- **Enums**: Domain state and type enums (`src/core/enums/`)
-- **Domain Events**: Internal facts raised by state changes (`src/core/events/`)
-- **Exceptions**: Custom domain error classes (`src/core/exceptions/`)
-- **Repository Port**: Interface definition (`src/core/interfaces/repositories/`)
-
-## 3. State Machines
-- **Diagram**: ASCII diagram of status transitions
-- **Transition Table**:
-
-| From Status | To Status | Trigger Method | Invariant Guard |
-|-------------|-----------|----------------|-----------------|
-| `DRAFT`     | `ACTIVE`  | `activate()`   | `assertHasItems()` |
-
-## 4. Application Layer
-- **Commands**: Write operations (`src/application/commands/`)
-- **Queries**: Read operations (`src/application/queries/`)
-- **Command Flow Diagram**:
-```
-Controller → Zod DTO → CommandBus → Handler (UoW) → Aggregate → Repo.save() → Events
-```
-- **Query Flow Diagram**:
-```
-Controller → QueryBus → Handler → ReadService (Mongoose Projection) → DTO
-```
-
-## 5. Infrastructure Layer
-- **Mongoose Schema**: DB fields in `snake_case`, indexes, collection name
-- **Repository Implementation**: `Mongo{Domain}Repository`
-- **Read Service**: `Mongo{Domain}ReadService`
-- **Module Wiring**: NestJS `@Module` with Symbol DI tokens (`{DOMAIN}_REPOSITORY`)
-
-## 6. Presentation Layer
-- **Controllers**: `AdminController`, `ClientController`
-- **Endpoints Table**:
-
-| Method | Path | Auth / Guards | Handler Method | Description |
-|--------|------|---------------|----------------|-------------|
-
-## 7. End-to-End Workflow Flows
-- ASCII sequence diagrams for key user flows (e.g. Create, Transition Status, Process Action)
-
-## 8. File Map
-- Table listing every file involved across all 4 layers
-
-## 9. Key Invariants
-- Summary list of non-negotiable business rules
-```
+Add one row whenever a domain-scoped choice rejected a plausible alternative (e.g. why an attribute became a Value Object instead of a primitive, why one aggregate boundary was chosen over another). If the decision is cross-domain or architectural rather than scoped to this one domain, write an ADR instead (`architect` agent, `templates/docs/adr.md`) and link it here rather than duplicating it.
 
 ## Execution Steps
 
 1. **Extract Domain Name**: PascalCase (e.g., `Campaign`, `Order`).
 2. **Determine Mode**:
-   - If `src/core/aggregate-roots/<domain>.aggregate.ts` exists → `document` mode.
+   - If `src/domain/aggregate-roots/<domain>.root.ts` exists → `document` mode.
    - If creating new domain → `generate` mode.
 3. **Execute Mode Flow**:
-   - **In `generate` mode**: Clone `templates/docs/domain.md` → `docs/domains/<domain>/domain.md`, fill sections from requirements, set `status: draft`.
-   - **In `document` mode**: Scan all 4 layers under `src/`, extract properties and methods, fill sections, set `status: reviewed`.
+   - **In `generate` mode**: Clone `templates/docs/domain.md` → `docs/domains/<domain>/domain.md`, fill every section from requirements, set `status: draft`.
+   - **In `document` mode**: Scan all 4 layers under `src/`, extract properties and methods, fill every section, set `status: reviewed`.
 4. **Update Glossary**: Append new ubiquitous language terms to `docs/architecture/glossary.md`.
