@@ -1,6 +1,6 @@
 ---
 name: spec-implement-guideline
-description: Executes tasks.md sequentially item by item, updating tasks.md immediately after each item completes to support seamless interruption recovery.
+description: Executes tasks.md phase by phase, dispatching each phase's dependency-satisfied, non-conflicting effort:low tasks to parallel implementer subagents while effort:medium/high tasks run inline, updating tasks.md immediately after each task so a new session can resume from the exact checkpoint.
 user-invocable: false
 ---
 
