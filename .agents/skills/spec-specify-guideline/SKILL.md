@@ -1,5 +1,5 @@
 ---
-name: spec-specify
+name: spec-specify-guideline
 description: Creates a new feature specification at specs/NNN-<name>/spec.md from a high-level natural language description, focusing strictly on functional requirements, scenarios, and business rules.
 ---
 

@@ -1,5 +1,5 @@
 ---
-name: spec-implement
+name: spec-implement-guideline
 description: Executes tasks.md sequentially item by item, updating tasks.md immediately after each item completes to support seamless interruption recovery.
 ---
 

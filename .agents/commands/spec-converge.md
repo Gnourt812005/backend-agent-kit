@@ -13,10 +13,7 @@ Assess completed code against `specs/NNN-<name>/spec.md`, sync changes to perman
 
 ## Steps
 1. Activate [`code-reviewer`](../agents/code-reviewer.md) agent.
-2. Run skill [`spec-converge`](../skills/spec-converge/SKILL.md).
-3. Run validation hooks [`after-generate.sh`](../hooks/after-generate.sh).
-4. Sync new domain models back to permanent `docs/domains/<domain>/domain.md`.
-5. Set `specs/NNN-<name>/spec.md` status to `completed`.
+2. Run skill [`spec-converge-guideline`](../skills/spec-converge-guideline/SKILL.md).
 
 ## Deliverables
 - Permanent architecture documentation in `docs/domains/` updated

@@ -1,5 +1,5 @@
 ---
-name: spec-converge
+name: spec-converge-guideline
 description: Assesses completed implementation against spec.md, syncs architectural changes back to permanent docs/domains/, and locks the spec directory as complete.
 ---
 

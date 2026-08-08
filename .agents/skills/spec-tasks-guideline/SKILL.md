@@ -1,5 +1,5 @@
 ---
-name: spec-tasks
+name: spec-tasks-guideline
 description: Generates a dependency-ordered checklist of fine-grained, granular implementation tasks at specs/NNN-<name>/tasks.md based on plan.md.
 ---
 

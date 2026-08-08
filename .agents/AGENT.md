@@ -37,21 +37,14 @@ Help engineers create backend modules that are:
 
 ## Commands
 
-Invoke via user intent matching [`.agents/commands/`](commands/):
-- [`init-session`](commands/init-session.md) — Warm up session context (run first)
-- [`init-kit`](commands/init-kit.md), [`add-domain`](commands/add-domain.md), [`add-use-case`](commands/add-use-case.md), [`add-endpoint`](commands/add-endpoint.md)
-- [`add-event`](commands/add-event.md), [`add-tech`](commands/add-tech.md), [`add-migration`](commands/add-migration.md), [`create-tests`](commands/create-tests.md), [`review-architecture`](commands/review-architecture.md), [`repair-kit`](commands/repair-kit.md)
-- [`spec-specify`](commands/spec-specify.md), [`spec-clarify`](commands/spec-clarify.md), [`spec-plan`](commands/spec-plan.md), [`spec-tasks`](commands/spec-tasks.md), [`spec-implement`](commands/spec-implement.md), [`spec-converge`](commands/spec-converge.md)
-- [`refactor-align`](commands/refactor-align.md), [`refactor-restore`](commands/refactor-restore.md)
+Every file in [`.agents/commands/`](commands/) declares `name` + `description` in frontmatter. Match user intent against those descriptions before generating anything ad hoc — a command that already covers the request wins over freehand generation. Run `init-session` first in every new session; it is not optional.
 
 ## Hard Constraints
 
-- Domain layer must not import infrastructure, frameworks, or HTTP libraries.
-- Application layer depends only on domain + ports (interfaces).
-- Adapters implement ports; never leak adapter types into domain.
-- Prefer explicit errors over silent catch/swallow.
 - Every public use case needs at least one unit test and one integration path.
 - Do not invent business rules — ask or write to `docs/domains/<x>/domain.md` with `status: draft`.
+
+Architecture boundaries (layer dependencies, error handling, naming, security, observability, coding standards) live in [`rules/global/`](rules/global/) — already loaded on every change per Operating Model step 4. Do not restate them here.
 
 ## Dedicated Technology Stack
 
@@ -62,7 +55,9 @@ This kit is strictly specialized for the following production stack:
 - **Persistence**: MongoDB via Mongoose Schemas & Session-aware Repository Adapters
 - **Messaging**: Transactional Outbox Pattern + RabbitMQ Integration Events
 
-## Workflow Checklist
+## Workflow Checklist (direct changes)
+
+Use this for a single, well-understood chore run straight from a command in [`.agents/commands/`](commands/) — one domain, one endpoint, one migration. For a feature that's large, ambiguous, or spans multiple domains/layers, use the spec-driven pipeline instead (`spec-specify` → `spec-clarify` → `spec-plan` → `spec-tasks` → `spec-implement` → `spec-converge`) — it produces its own ordered checklist at `specs/NNN-<name>/tasks.md`, which `spec-implement` executes. Don't run both checklists for the same change.
 
 ```
 - [ ] Load docs/architecture/service.md + relevant domain docs in docs/domains/

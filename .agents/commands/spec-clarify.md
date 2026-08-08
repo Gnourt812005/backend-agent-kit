@@ -12,9 +12,7 @@ Audit `specs/NNN-<name>/spec.md` for underspecified areas and ask up to 3 target
 - Existing `specs/NNN-<name>/spec.md` in `draft` status
 
 ## Steps
-1. Run skill [`spec-clarify`](../skills/spec-clarify/SKILL.md).
-2. Present up to 3 targeted clarification questions to the user.
-3. Update `spec.md` with resolved answers and mark `status: approved`.
+1. Run skill [`spec-clarify-guideline`](../skills/spec-clarify-guideline/SKILL.md).
 
 ## Deliverables
 - Fully clarified `spec.md` in `approved` status

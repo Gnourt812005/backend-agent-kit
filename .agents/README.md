@@ -50,7 +50,7 @@ Handles complex multi-step feature development with granular task tracking and a
   * [`spec-implement`](commands/spec-implement.md) — Execute tasks with real-time `[x]` task updates
   * [`spec-converge`](commands/spec-converge.md) — Sync architectural changes back to `docs/` and lock spec
 * **Skills**:
-  * [`spec-specify`](skills/spec-specify/SKILL.md), [`spec-clarify`](skills/spec-clarify/SKILL.md), [`spec-plan`](skills/spec-plan/SKILL.md), [`spec-tasks`](skills/spec-tasks/SKILL.md), [`spec-implement`](skills/spec-implement/SKILL.md), [`spec-converge`](skills/spec-converge/SKILL.md)
+  * [`spec-specify-guideline`](skills/spec-specify-guideline/SKILL.md), [`spec-clarify-guideline`](skills/spec-clarify-guideline/SKILL.md), [`spec-plan-guideline`](skills/spec-plan-guideline/SKILL.md), [`spec-tasks-guideline`](skills/spec-tasks-guideline/SKILL.md), [`spec-implement-guideline`](skills/spec-implement-guideline/SKILL.md), [`spec-converge-guideline`](skills/spec-converge-guideline/SKILL.md)
 * **Templates**:
   * [`spec.md`](templates/spec/spec.md), [`plan.md`](templates/spec/plan.md), [`ref.md`](templates/spec/ref.md), [`tasks.md`](templates/spec/tasks.md)
 

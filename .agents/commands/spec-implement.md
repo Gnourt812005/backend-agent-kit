@@ -13,12 +13,7 @@ Execute implementation tasks in `specs/NNN-<name>/tasks.md` sequentially, markin
 
 ## Steps
 1. Activate specialist agents based on phase ([`domain-modeler`](../agents/domain-modeler.md), [`database-engineer`](../agents/database-engineer.md), [`api-designer`](../agents/api-designer.md)).
-2. Run skill [`spec-implement`](../skills/spec-implement/SKILL.md).
-3. Check `tasks.md` for uncompleted items (`[ ]`) and resume from the first uncompleted task item.
-4. Process each granular task item sequentially:
-   - Generate code from `.agents/templates/`.
-   - **Immediately update `tasks.md` (mark `[x]`) after each item completes**.
-5. Run [`after-generate.sh`](../hooks/after-generate.sh) after completing each phase.
+2. Run skill [`spec-implement-guideline`](../skills/spec-implement-guideline/SKILL.md) — resumes from the first uncompleted item, checkpoints `tasks.md` after each one.
 
 ## Deliverables
 - Fully generated & tested code implementation

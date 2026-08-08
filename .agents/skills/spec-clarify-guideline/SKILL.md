@@ -1,5 +1,5 @@
 ---
-name: spec-clarify
+name: spec-clarify-guideline
 description: Identifies underspecified areas or ambiguities in specs/NNN-<name>/spec.md and formulates up to 3 targeted clarification questions before planning.
 ---
 

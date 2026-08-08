@@ -13,7 +13,7 @@ Bootstrap a new feature specification directory under `specs/NNN-<name>/spec.md`
 
 ## Steps
 1. Activate [`domain-modeler`](../agents/domain-modeler.md) agent.
-2. Run skill [`spec-specify`](../skills/spec-specify/SKILL.md).
+2. Run skill [`spec-specify-guideline`](../skills/spec-specify-guideline/SKILL.md).
 3. Generate `specs/NNN-<short-name>/spec.md` with `status: draft`.
 4. Output spec directory location for user review.
 

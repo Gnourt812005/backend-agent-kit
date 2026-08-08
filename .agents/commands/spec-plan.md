@@ -13,7 +13,7 @@ Generate implementation plan `plan.md` and traceability link graph `ref.md` for 
 
 ## Steps
 1. Activate [`architect`](../agents/architect.md) agent.
-2. Run skill [`spec-plan`](../skills/spec-plan/SKILL.md).
+2. Run skill [`spec-plan-guideline`](../skills/spec-plan-guideline/SKILL.md).
 3. Generate `specs/NNN-<name>/plan.md` (layer impact & strategy).
 4. Generate `specs/NNN-<name>/ref.md` (traceability graph linking touched `docs/` and ADRs).
 

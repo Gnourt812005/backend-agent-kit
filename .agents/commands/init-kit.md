@@ -74,13 +74,17 @@ Scaffold project documentation and configuration for a new service.
 
 Adapt the `.agents/` kit to match an existing project's conventions.
 
+### Before You Start
+
+Have ready: the project's `src/` directory structure (`find src/ -type d | sort`), its `package.json` dependencies (or language equivalent), 1-2 sample files if the codebase needs the refactor pipeline afterward, and a sense of the desired end-state architecture.
+
 ### Steps
 
-1. **Inventory project** — Gather the project's directory structure, naming conventions, base classes, and framework patterns:
+1. **Inventory project** — Render [`templates/docs/inventory.md`](../templates/docs/inventory.md) → `docs/architecture/inventory.md` and fill it in:
    - Run `find src/ -type d | sort` to map directories
    - Run `find src/ -type f -name "*.ts" | head -80` to sample file patterns
    - Check `package.json` for framework dependencies
-   - Document conventions (aggregate root suffix, repository port pattern, DI token format, etc.)
+   - Answer every question in the rendered inventory doc (directory structure, naming conventions, base classes, framework patterns) — ask the user for anything not inferable from the codebase
 
 2. **Customize rules** — Update `.agents/rules/` to match project conventions:
    - `rules/global/naming.md` — Update class/file naming matrix, directory paths, DI token format, path aliases
@@ -119,6 +123,7 @@ Adapt the `.agents/` kit to match an existing project's conventions.
 
 ### Deliverables
 
+- `docs/architecture/inventory.md` filled with project conventions
 - `.agents/` rules, templates, and hooks updated to match project conventions
 - `AGENT.md` stack section aligned with project
 - Clean link validation and boundary checks passing
@@ -128,7 +133,7 @@ Adapt the `.agents/` kit to match an existing project's conventions.
 
 - The **Universal Meta-Kits** (`spec-*`, `refactor-*`, `review-architecture`, `repair-kit`) must NOT be modified — they are stack-agnostic and work identically across any project.
 - Refer to the full [Customization Matrix](../README.md#-customization-checklist) in the kit README for detailed guidance.
-- For a step-by-step walkthrough, see the [`prompt.md`](../../prompt.md) guide.
+- To refactor existing messy code after adaptation, use [`refactor-align`](refactor-align.md) then [`refactor-restore`](refactor-restore.md).
 
 ---
 
