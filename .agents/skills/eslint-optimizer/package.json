@@ -1,0 +1,18 @@
+{
+  "name": "eslint-optimizer-skill",
+  "private": true,
+  "description": "Scripts for the eslint-optimizer skill. Drop this folder's contents into a target repo (or npm link) and run via the commands below.",
+  "scripts": {
+    "lint:fix": "eslint . --fix",
+    "lint:compile": "node scripts/compile-lint.js",
+    "lint:compile:warnings": "node scripts/compile-lint.js --include-warnings",
+    "lint:compile:changed": "node scripts/compile-lint.js --changed-only",
+    "lint:codemod": "node scripts/codemods/run.js",
+    "lint:codemod:all": "node scripts/codemods/run.js --all",
+    "lint:verify-clean": "node scripts/compile-lint.js --verify-clean",
+    "lint:cleanup": "rm -rf .cache/eslint"
+  },
+  "devDependencies": {
+    "ts-morph": "^23.0.0"
+  }
+}
