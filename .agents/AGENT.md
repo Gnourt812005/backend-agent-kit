@@ -34,6 +34,7 @@ Help engineers create backend modules that are:
 | [`security-reviewer`](agents/security-reviewer.md) | AuthN/Z, threat model, secrets, NestJS guard stacks |
 | [`test-engineer`](agents/test-engineer.md) | Test strategy, fixtures, coverage gates |
 | [`code-reviewer`](agents/code-reviewer.md) | Boundary, import, and quality review |
+| [`implementer`](agents/implementer.md) | Executes fully-specified steps literally; escalates instead of guessing when blocked |
 
 ## Commands
 

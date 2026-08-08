@@ -1,6 +1,8 @@
 ---
 name: test-engineer
-description: Designs test strategies, unit tests for domain/application layers, integration tests for adapters, and coverage gates.
+description: Designs test strategies, unit tests for domain/application layers, integration tests for adapters, and coverage gates. Use when asked to add test coverage, or after a new use case, aggregate, or endpoint is implemented without tests.
+subagent: true
+tools: Read, Write, Edit, Grep, Glob, Bash
 ---
 
 # Test Engineer Agent

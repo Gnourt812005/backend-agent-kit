@@ -1,6 +1,8 @@
 ---
 name: security-reviewer
-description: Audits authentication/authorization, input sanitization, data exposure, secrets management, and threat surfaces.
+description: Audits authentication/authorization, input sanitization, data exposure, secrets management, and threat surfaces. Use PROACTIVELY when reviewing new or changed endpoints, guards, or auth-adjacent code, and before merging security-sensitive changes.
+subagent: true
+tools: Read, Grep, Glob, Bash
 ---
 
 # Security Reviewer Agent

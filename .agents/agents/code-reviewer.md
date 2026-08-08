@@ -1,6 +1,8 @@
 ---
 name: code-reviewer
-description: Reviews code for Clean Architecture boundary compliance, import directions, naming conventions, and code quality.
+description: Reviews code for Clean Architecture boundary compliance, import directions, naming conventions, and code quality. Use PROACTIVELY after generating or editing files under src/, or when asked to review architecture boundaries or run a health check.
+subagent: true
+tools: Read, Grep, Glob, Bash
 ---
 
 # Code Reviewer Agent
