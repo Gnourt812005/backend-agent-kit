@@ -1,65 +1,34 @@
 ---
 template: value-object
-placeholders: [ValueObjectName, valueObjectName]
-generates: src/domain/value-objects/{{valueObjectName}}.vo.ts
+kind: structure
+placeholders: [ValueObjectName]
+layer: "{domain}"
 ---
 
-# {{ValueObjectName}} Value Object Template
+# {{ValueObjectName}} Value Object
 
-Immutable Value Object compared by structural equality.
+Value object: an immutable value defined by its attributes, validated at construction (e.g. `EmailAddress`, `Money`).
 
-## Code Blueprint
+This is a **structure spec**: it defines what the artifact must contain, not its syntax. Write it in the project's language, following `rules/global/naming.md` and any `rules/languages/` rule. If the active stack pack has a code blueprint at this same path, use that instead.
 
-```typescript
-// src/domain/value-objects/{{valueObjectName}}.vo.ts
-import { BaseValueObject } from '../base/base.value-object';
-import { InvalidValueObjectException } from '../exceptions/domain.exception';
+## Required Parts
 
-export class {{ValueObjectName}}VO extends BaseValueObject<number> {
-  protected constructor(_value: number) {
-    super(_value);
-  }
+| Part | Requirement |
+|------|-------------|
+| Validation | Construction fails with a domain error if the value is invalid |
+| Immutability | No setters; changes return a new instance |
+| Equality | By value, comparing all attributes |
+| Behavior | Domain operations on the value (e.g. `Money.add`), when meaningful |
 
-  static create(value: number): {{ValueObjectName}}VO {
-    if (typeof value !== 'number' || Number.isNaN(value)) {
-      throw new InvalidValueObjectException('{{ValueObjectName}}VO', 'must be a number');
-    }
-    if (value < 0) {
-      throw new InvalidValueObjectException('{{ValueObjectName}}VO', 'must be ≥ 0');
-    }
-    return new {{ValueObjectName}}VO(value);
-  }
+## Language-Neutral Sketch
 
-  get value(): number { return this.props; }
-
-  add(other: {{ValueObjectName}}VO): {{ValueObjectName}}VO {
-    return {{ValueObjectName}}VO.create(this.props + other.props);
-  }
-
-  subtract(other: {{ValueObjectName}}VO): {{ValueObjectName}}VO {
-    return {{ValueObjectName}}VO.create(this.props - other.props);
-  }
-
-  isZero(): boolean {
-    return this.props === 0;
-  }
-
-  isGreaterThan(other: {{ValueObjectName}}VO): boolean {
-    return this.props > other.props;
-  }
-
-  equals(other: {{ValueObjectName}}VO): boolean {
-    return this.props === other.props;
-  }
-
-  toString(): string {
-    return String(this.props);
-  }
-}
+```text
+ValueObject {{ValueObjectName}}
+    of(raw) -> {{ValueObjectName}}     # validate, normalize, or raise error
+    equals(other) -> bool              # compare all attributes
 ```
 
 ## Post-Generation Checklist
-- [ ] Extends `BaseValueObject<Props>`
-- [ ] `protected constructor`
-- [ ] `static create()` factory with validation
-- [ ] File named `<name>.vo.ts`
+- [ ] Invalid input cannot produce an instance
+- [ ] Immutable after construction
+- [ ] Value equality implemented

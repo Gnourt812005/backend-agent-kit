@@ -1,31 +1,25 @@
-# Code & Doc Templates Blueprint
+# Code & Doc Templates
 
-Templates in `.agents/templates/` are **annotated markdown blueprints** used by agents to render production-grade code and documentation.
+Templates in `.agents/templates/` are annotated markdown blueprints that agents render into code and documentation.
 
-## Format Standard
+## Two kinds of template
 
-Every template is a Markdown file structured as follows:
+| Kind | Where | Contains |
+|------|-------|----------|
+| **Structure spec** (`kind: structure`) | Core: `domain/`, `application/`, `infrastructure/`, `api/` | What the artifact must contain, a language-neutral sketch, and a checklist. The agent writes it in the project's language. |
+| **Code blueprint** (`kind: code`) | Stack packs: `.agents/stacks/<pack>/templates/…` | Production code in one stack with `{{placeholders}}` and `WHY:` comments. |
 
-```markdown
+When a stack pack is active and has a file at the same path, the pack's code blueprint replaces the core structure spec. Docs, spec, refactor, and health templates are stack-neutral and shared.
+
+## Frontmatter
+
+```yaml
 ---
 template: aggregate
-placeholders: [DomainName, domainName, DOMAIN_NAME]
-generates: src/core/aggregate-roots/{{domainName}}.aggregate.ts
+kind: structure          # structure | code
+placeholders: [DomainName, DOMAIN_NAME]
+layer: "{domain}"        # resolved from [layout] in .agents/kit.toml
 ---
-
-# {{DomainName}} Aggregate Root Template
-
-Short explanation of what this blueprint generates and WHY non-obvious design decisions were made.
-
-## Code Blueprint
-
-```typescript
-// Production-ready TypeScript code with {{placeholders}}
-// Annotated with # WHY: inline comments
-```
-
-## Post-Generation Checklist
-- [ ] List of checks the agent must verify after rendering
 ```
 
 ## Variable Substitutions
@@ -36,3 +30,5 @@ Short explanation of what this blueprint generates and WHY non-obvious design de
 | `{{domainName}}` | `campaign` | `facebook-page` |
 | `{{DOMAIN_NAME}}` | `CAMPAIGN` | `FACEBOOK_PAGE` |
 | `{{propertyName}}` | `campaignName` | `facebookPage` |
+
+Layer placeholders (`{domain}`, `{application}`, `{infrastructure}`, `{api}`, `{tests}`, `{source_root}`) come from `[layout]` in `.agents/kit.toml`.

@@ -13,7 +13,7 @@ status: draft # draft | reviewed | approved
 - **Bounded Context**: Boundary and ownership.
 - **Key Concepts**:
 
-| Term | Definition | Ubiquitous Language Symbol |
+| Term | Definition | Code Name |
 |------|------------|----------------------------|
 
 - **Relations**: Interactions with other domains.
@@ -21,41 +21,39 @@ status: draft # draft | reviewed | approved
 ## 2. Domain Layer
 
 ### Aggregate Root: `{{DomainName}}Root`
-- **File**: `src/domain/aggregate-roots/{{domainName}}.root.ts`
+- **Location**: `{domain}` (file name per `rules/global/naming.md`)
 - **Properties**:
 
 | Property | Type | Description |
 |----------|------|-------------|
 
 - **Factory Methods**:
-  - `static create(input)` — Enforces initial invariants
-  - `static rehydrateProps(props)` — Reconstitutes aggregate from DB
+  - Creation factory — enforces initial invariants
+  - Rehydration — reconstitutes the aggregate from persisted state
 
 - **Domain Methods**:
   - `updateStatus(newStatus)` — Triggers state transition and emits `{{DomainName}}StatusChangedEvent`.
 
 ### Entities
-- `src/domain/entities/`
+- `{domain}`
 
 ### Value Objects
-- `src/domain/value-objects/`
+- `{domain}`
 
 ### Enums
-- `src/domain/enums/`
+- `{domain}`
 
 ### Domain Events
-- `src/domain/events/`
+- `{domain}`
 
 ### Exceptions
-- `src/domain/exceptions/`
+- `{domain}`
 
 ### Repository Port
-- `src/domain/ports/repositories/{{domainName}}.repository.port.ts`
-- **DI Token**: `{{DOMAIN_NAME}}_REPOSITORY`
+- `{{DomainName}}Repository` port in `{domain}`
 
 ### Read Repository Port
-- `src/domain/ports/repositories/read/{{domainName}}-read.repository.port.ts`
-- **DI Token**: `{{DOMAIN_NAME}}_READ_REPOSITORY`
+- `{{DomainName}}ReadRepository` port in `{domain}` or `{application}`
 
 ## 3. State Machines
 
@@ -80,36 +78,36 @@ status: draft # draft | reviewed | approved
 
 ## 5. Infrastructure Layer
 
-- **Schema**: `src/infrastructure/persistence/mongoose/schemas/{{domainName}}.schema.ts` (`{{domainName}}s` collection)
-- **Repository Implementation**: `Mongo{{DomainName}}Repository`
-- **Read Repository**: `Mongo{{DomainName}}ReadRepository`
-- **Module**: `src/infrastructure/modules/{{domainName}}.module.ts`
+- **Persistence model**: <table / collection name, key indexes>
+- **Repository adapter**: `<Technology>{{DomainName}}Repository`
+- **Read repository adapter**: `<Technology>{{DomainName}}ReadRepository`
+- **Wiring**: where the ports are bound in the composition root
 
 ## 6. API Layer
 
-| Method | Path | Guards | Controller | Description |
+| Operation | Route / Method / Topic | Auth | Adapter | Description |
 |--------|------|--------|------------|-------------|
 
 ## 7. End-to-End Workflow Flows
 
 ### Flow 1: Create {{DomainName}}
 ```
-gRPC Controller → Zod DTO → CommandBus → Handler (TxRunner) → {{DomainName}}Root.create() → Repo.save() → Outbox
+Driving adapter → validated input DTO → Command handler (unit of work) → {{DomainName}} creation factory → Repository.save() → Outbox
 ```
 
 ## 8. File Map
 
 | Layer | File Path |
 |-------|-----------|
-| Domain | `src/domain/aggregate-roots/{{domainName}}.root.ts` |
-| Applications | `src/applications/commands/` |
-| Infrastructure | `src/infrastructure/persistence/mongoose/schemas/{{domainName}}.schema.ts` |
-| API | `src/api/grpc/` |
+| Domain | `{domain}/…` |
+| Application | `{application}/…` |
+| Infrastructure | `{infrastructure}/…` |
+| API | `{api}/…` |
 
 ## 9. Key Invariants
 
 1. State changes MUST occur through Aggregate Root methods.
-2. Database writes and outbox events MUST be executed inside Transaction Runner.
+2. Database writes and outbox records MUST commit in the same unit of work.
 3. Read queries MUST bypass Aggregate Roots and use Read Repository Ports.
 
 ## 10. Decisions

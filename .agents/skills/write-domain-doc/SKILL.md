@@ -10,7 +10,7 @@ This skill creates or updates a domain specification in `docs/domains/<domain>/d
 ## Modes of Operation
 
 1. **`generate` mode** (New domain): Writes domain doc from user prompt/business description before code is generated. Frontmatter is set to `status: draft`.
-2. **`document` mode** (Existing domain): Scans source code under `src/` to reverse-engineer and document implemented behavior. Frontmatter is set to `status: reviewed`.
+2. **`document` mode** (Existing domain): Scans source code under the layer directories in `[layout]` (`.agents/kit.toml`) to reverse-engineer and document implemented behavior. Frontmatter is set to `status: reviewed`.
 
 ## Document Frontmatter Format
 
@@ -31,9 +31,9 @@ Add one row whenever a domain-scoped choice rejected a plausible alternative (e.
 
 1. **Extract Domain Name**: PascalCase (e.g., `Campaign`, `Order`).
 2. **Determine Mode**:
-   - If `src/domain/aggregate-roots/<domain>.root.ts` exists → `document` mode.
+   - If the aggregate for `<domain>` already exists under `{domain}` → `document` mode.
    - If creating new domain → `generate` mode.
 3. **Execute Mode Flow**:
    - **In `generate` mode**: Clone `templates/docs/domain.md` → `docs/domains/<domain>/domain.md`, fill every section from requirements, set `status: draft`.
-   - **In `document` mode**: Scan all 4 layers under `src/`, extract properties and methods, fill every section, set `status: reviewed`.
+   - **In `document` mode**: Scan all four layers (`{domain}`, `{application}`, `{infrastructure}`, `{api}`), extract properties and methods, fill every section, set `status: reviewed`.
 4. **Update Glossary**: Append new ubiquitous language terms to `docs/architecture/glossary.md`.

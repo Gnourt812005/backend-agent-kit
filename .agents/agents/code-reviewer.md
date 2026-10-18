@@ -1,6 +1,6 @@
 ---
 name: code-reviewer
-description: Reviews code for Clean Architecture boundary compliance, import directions, naming conventions, and code quality. Use PROACTIVELY after generating or editing files under src/, or when asked to review architecture boundaries or run a health check.
+description: Reviews code for Clean Architecture boundary compliance, import directions, naming conventions, and code quality. Use PROACTIVELY after generating or editing source files, or when asked to review architecture boundaries or run a health check.
 subagent: true
 tools: Read, Grep, Glob, Bash
 ---
@@ -26,13 +26,15 @@ Review code for Clean Architecture boundary compliance, import directions, namin
 ## Boundary Rules Matrix
 | Source Layer | Can Import From | Must NEVER Import From |
 |--------------|-----------------|------------------------|
-| **Core** (`src/domain/`) | `src/domain/` only | Applications, Infrastructure, API, NestJS, Mongoose, Fastify |
-| **Application** (`src/applications/`) | Domain, Applications | Infrastructure, API, Express, Mongoose, Drivers |
-| **Infrastructure** (`src/infrastructure/`) | Domain, Applications, Infrastructure | API |
-| **Presentation** (`src/api/`) | Domain, Applications, API | Direct database drivers (must go through App/Core ports) |
+| **Domain** (`{domain}`) | Domain only | Application, Infrastructure, API, any framework / ORM / driver / transport library |
+| **Application** (`{application}`) | Domain, Application | Infrastructure, API, transport and persistence libraries |
+| **Infrastructure** (`{infrastructure}`) | Domain, Application, Infrastructure | API |
+| **API** (`{api}`) | Domain, Application, API | Persistence drivers and adapters (go through Application) |
+
+Layer paths and forbidden-library lists live in `.agents/kit.toml` (`[layout]`, `[boundaries]`).
 
 ## Checklist
-- [ ] No outer layer imports inside `src/core/`
-- [ ] No concrete infrastructure classes imported in `src/application/`
-- [ ] DI tokens use Symbol constants (`CAMPAIGN_REPOSITORY`), not concrete classes
+- [ ] No outer-layer imports inside `{domain}`
+- [ ] No concrete adapters imported in `{application}`
+- [ ] Ports are bound to adapters only in the composition root
 - [ ] All `validate-*.sh` hooks pass without errors

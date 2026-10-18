@@ -1,33 +1,33 @@
 ---
 template: dto
-placeholders: [FeatureName, featureName]
-generates: src/applications/dtos/{{featureName}}.dto.ts
+kind: structure
+placeholders: [FeatureName]
+layer: "{application}"
 ---
 
-# {{FeatureName}} DTO Template
+# {{FeatureName}} DTOs
 
-DTO schema validated with Zod via `nestjs-zod`. Re-exported from `@applications/dtos/`.
+Input/output DTOs for a use case. Input DTOs are validated at the driving adapter with the project's validation library.
 
-## Code Blueprint
+This is a **structure spec**: it defines what the artifact must contain, not its syntax. Write it in the project's language, following `rules/global/naming.md` and any `rules/languages/` rule. If the active stack pack has a code blueprint at this same path, use that instead.
 
-```typescript
-// src/applications/dtos/{{featureName}}.dto.ts
-import { createZodDto } from 'nestjs-zod';
-import { z } from 'zod';
+## Required Parts
 
-export const {{FeatureName}}Schema = z.object({
-  ownerId: z.string().min(1, 'Owner ID is required'),
-  name: z.string().min(2, 'Name must be at least 2 characters'),
-  description: z.string().max(1000).optional(),
-});
+| Part | Requirement |
+|------|-------------|
+| Input DTO | Fields, types, constraints (required, length, ranges, formats) |
+| Output DTO | Only what the caller needs; never internal IDs or secrets the caller shouldn't see |
+| Validation | Declared once, executed at the adapter boundary |
+| Independence | No aggregates, persistence models, or transport types |
 
-export class {{FeatureName}}Dto extends createZodDto({{FeatureName}}Schema) {}
+## Language-Neutral Sketch
 
-export type {{FeatureName}} = z.infer<typeof {{FeatureName}}Schema>;
+```text
+{{FeatureName}}Input:  customerId (uuid, required), items (1..50) ...
+{{FeatureName}}Output: orderId
 ```
 
 ## Post-Generation Checklist
-- [ ] Zod schema defined and exported
-- [ ] DTO class extends `createZodDto(Schema)`
-- [ ] Type export for inferred type
-- [ ] File placed in `src/applications/dtos/`
+- [ ] Every input field has explicit constraints
+- [ ] Output exposes no internal-only data
+- [ ] Validation runs before the handler

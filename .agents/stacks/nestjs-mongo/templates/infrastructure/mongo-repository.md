@@ -1,5 +1,6 @@
 ---
 template: mongo-repository
+kind: code
 placeholders: [DomainName, domainName, DOMAIN_NAME]
 generates: src/infrastructure/persistence/mongoose/repositories/{{domainName}}.repository.ts
 ---

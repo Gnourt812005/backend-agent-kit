@@ -25,7 +25,7 @@ generates: specs/{{FeatureNumber}}-{{featureName}}/plan.md
 - Database schemas, repository ports/adapters, outbox events
 
 ### API Layer
-- gRPC Controllers and endpoint routes
+- Driving adapters and endpoint routes / methods
 
 ## 3. Security & Safety Review
-- Auth guards, roles, input validation (Zod DTOs)
+- Authentication, authorization, input validation

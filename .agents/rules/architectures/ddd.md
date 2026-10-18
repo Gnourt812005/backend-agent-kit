@@ -1,7 +1,7 @@
 ---
 description: Domain-Driven Design (DDD) tactical patterns rules
 paths:
-  - "src/domain/**"
+  - "{domain}/**"
 ---
 
 # DDD Tactical Pattern Rules

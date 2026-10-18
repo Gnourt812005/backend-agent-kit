@@ -7,30 +7,30 @@
 | Question | Answer |
 |----------|--------|
 | What are your 4 layer directory names? (domain, application, infrastructure, api) | |
-| Do you use any non-standard directories? (shared, grpc, kafka, cache, etc.) | |
+| Do you use any non-standard directories? (shared, transport-specific, cache, etc.) | |
 
 ## B. Naming Conventions
 
 | Question | Answer |
 |----------|--------|
 | Aggregate Root class suffix? (e.g., `{Name}Root`, `{Name}Aggregate`) | |
-| Aggregate Root file pattern? (e.g., `{name}.root.ts`, `{name}.aggregate.ts`) | |
+| Aggregate Root file pattern? (e.g., `order.root.*`, `order_aggregate.*`, `Order.*`) | |
 | Value Object suffix? (e.g., `{Name}VO`, `{Name}Value`) | |
-| Value Object file pattern? (e.g., `{name}.vo.ts`, `{name}.value-object.ts`) | |
+| Value Object file pattern? (e.g., `email.vo.*`, `email_address.*`) | |
 | Entity suffix? (e.g., `{Name}Entity`) | |
-| Entity file pattern? (e.g., `{name}.entity.ts`) | |
+| Entity file pattern? (e.g., `order_line.*`, `order-line.entity.*`) | |
 | Repository interface suffix? (e.g., `{Name}RepositoryPort`, `I{Name}Repository`) | |
-| Repository file pattern? (e.g., `{name}.repository.port.ts`) | |
+| Repository file pattern? (e.g., `order_repository.*`, `order.repository.port.*`) | |
 | Read repository suffix? (e.g., `{Name}ReadRepositoryPort`) | |
-| Read repository file pattern? (e.g., `{name}-read.repository.port.ts`) | |
-| DI token format? (e.g., `Symbol('NAME_REPOSITORY')`) | |
+| Read repository file pattern? (e.g., `order_read_repository.*`) | |
+| Dependency injection / wiring style? (container, framework DI, manual wiring in main) | |
 | Exception base class? (e.g., `DomainException`) | |
 | Command/Query handler suffix? (e.g., `{Feature}Handler`) | |
-| Command/Query handler file pattern? (e.g., `{feature}.handler.ts`) | |
+| Command/Query handler file pattern? (e.g., `place_order_handler.*`, `place-order.handler.*`) | |
 | Command class pattern? (e.g., `{Feature}Command extends Command<Dto>`) | |
 | Enum prefix? (e.g., `E{Name}`) | |
 | Domain Event suffix? (e.g., `{Name}Event`) | |
-| Domain Event file pattern? (e.g., `{name}.event.ts`) | |
+| Domain Event file pattern? (e.g., `order_placed.*`, `order-placed.event.*`) | |
 
 ## C. Base Classes & Core Abstractions
 
@@ -48,12 +48,12 @@
 | Question | Answer |
 |----------|--------|
 | Language & version? | |
-| Framework? (NestJS, Fastify, Express, etc.) | |
-| Database & ODM/ORM? (Mongoose, Prisma, TypeORM, etc.) | |
-| Message bus? (RabbitMQ, Kafka, SQS, etc.) | |
-| Validation library? (Zod, Joi, class-validator, etc.) | |
-| Test framework? (Jest, Vitest, Mocha, etc.) | |
+| Framework? (e.g., NestJS, Gin, FastAPI, Spring, none) | |
+| Database & ODM/ORM? (e.g., Mongoose, Prisma, GORM, SQLAlchemy, raw driver) | |
+| Message bus? (e.g., RabbitMQ, Kafka, SQS, NATS, none) | |
+| Validation library? (e.g., Zod, go-playground/validator, Pydantic) | |
+| Test framework? (e.g., Jest, Vitest, go test, pytest) | |
 | API style? (REST, gRPC, GraphQL) | |
-| Auth mechanism? (JWT, OAuth, CASL, etc.) | |
+| Auth mechanism? (e.g., JWT, OAuth2/OIDC, API keys; authorization library) | |
 | Path aliases? (e.g., `@domain/*`, `@app/*`) | |
 | Outbox implementation? (DB collection, table, etc.) | |

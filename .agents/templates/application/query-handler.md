@@ -1,38 +1,32 @@
 ---
 template: query-handler
-placeholders: [DomainName, FeatureName, domainName, featureName, DOMAIN_NAME]
-generates: src/applications/queries/{{domainName}}-{{featureName}}/{{domainName}}-{{featureName}}.handler.ts
+kind: structure
+placeholders: [FeatureName]
+layer: "{application}"
 ---
 
-# {{FeatureName}} Query Handler Template
+# {{FeatureName}} Query Handler
 
-CQRS Read-side Query Handler querying database projections directly without aggregates.
+Query handler: returns DTOs from a read repository or projection, with no aggregate, transaction, or events.
 
-## Code Blueprint
+This is a **structure spec**: it defines what the artifact must contain, not its syntax. Write it in the project's language, following `rules/global/naming.md` and any `rules/languages/` rule. If the active stack pack has a code blueprint at this same path, use that instead.
 
-```typescript
-// src/applications/queries/{{domainName}}-{{featureName}}/{{domainName}}-{{featureName}}.handler.ts
-import { QueryHandler, IQueryHandler } from '@nestjs/cqrs';
-import { Inject } from '@nestjs/common';
-import { {{FeatureName}}Query } from './{{domainName}}-{{featureName}}.query';
-import { {{DOMAIN_NAME}}_READ_REPOSITORY } from '@domain/ports/repositories/read/{{domainName}}-read.repository.port';
-import type { {{DomainName}}ReadRepositoryPort } from '@domain/ports/repositories/read/{{domainName}}-read.repository.port';
+## Required Parts
 
-@QueryHandler({{FeatureName}}Query)
-export class {{FeatureName}}Handler implements IQueryHandler<{{FeatureName}}Query> {
-  constructor(
-    @Inject({{DOMAIN_NAME}}_READ_REPOSITORY) private readonly readRepo: {{DomainName}}ReadRepositoryPort,
-  ) {}
+| Part | Requirement |
+|------|-------------|
+| Dependencies | Read-repository port only |
+| Access | Authorization applied to the actor before or within the read |
+| Return | DTO, list, or page of DTOs |
 
-  async execute(query: {{FeatureName}}Query): Promise<{{DomainName}}ReadResult> {
-    // WHY: Read handlers bypass domain aggregates and Transaction Runner for high-performance read queries
-    return this.readRepo.findList(query.filters);
-  }
-}
+## Language-Neutral Sketch
+
+```text
+handle({{FeatureName}} q):
+    return readRepo.list(q.filter, q.page)
 ```
 
 ## Post-Generation Checklist
-- [ ] Uses `ReadRepositoryPort` (not `ReadService`)
-- [ ] No `TransactionRunner` or `EventService` injection
-- [ ] Uses `@domain/` path aliases
-- [ ] Handler named `{Feature}Handler` (not `{Feature}QueryHandler`)
+- [ ] No aggregate rehydration
+- [ ] No transaction and no events
+- [ ] Returns DTOs only

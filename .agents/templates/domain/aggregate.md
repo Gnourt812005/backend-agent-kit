@@ -1,110 +1,51 @@
 ---
 template: aggregate
-placeholders: [DomainName, domainName, DOMAIN_NAME]
-generates: src/domain/aggregate-roots/{{domainName}}.root.ts
+kind: structure
+placeholders: [DomainName, DOMAIN_NAME]
+layer: "{domain}"
 ---
 
-# {{DomainName}} Aggregate Root Template
+# {{DomainName}} Aggregate Root
 
-Aggregate Root encapsulating state transitions, business invariants, and domain events.
+Aggregate root: the consistency boundary that owns state transitions, enforces business invariants, and records domain events.
 
-## Code Blueprint
+This is a **structure spec**: it defines what the artifact must contain, not its syntax. Write it in the project's language, following `rules/global/naming.md` and any `rules/languages/` rule. If the active stack pack has a code blueprint at this same path, use that instead.
 
-```typescript
-// src/domain/aggregate-roots/{{domainName}}.root.ts
-import { AggregateRoot } from '../base/base.entity';
-import { E{{DomainName}}Status } from '../enums/{{domainName}}-status.enum';
-import { {{DomainName}}Exception } from '../exceptions/{{domainName}}.exception';
-import { {{DomainName}}StatusChangedEvent } from '../events/{{domainName}}-status-changed.event';
+## Required Parts
 
-export interface {{DomainName}}RootProps {
-  id: string;
-  ownerId: string;
-  status: E{{DomainName}}Status;
-  // WHY: Props contain pure domain attributes only (no MongoDB _id or DB timestamps)
-}
+| Part | Requirement |
+|------|-------------|
+| Identity | A stable ID generated or assigned at creation |
+| State | Pure domain attributes only, with no persistence IDs, ORM metadata, or framework types |
+| Creation factory | Validates initial invariants and creates a new instance; the only way to create a brand-new aggregate |
+| Rehydration | Rebuilds an existing aggregate from persisted state without re-running creation rules; used only by repositories |
+| Domain methods | Named after business actions (`cancel`, `ship`), never generic setters |
+| Guards | Private fail-fast checks that raise domain errors with stable codes |
+| Domain events | Recorded on each meaningful state change and pulled by the application after saving |
+| Encapsulation | Construction and state are not mutable from outside |
 
-export interface Create{{DomainName}}Input {
-  ownerId: string;
-  // WHY: Factory input validates initial invariants
-}
+## Language-Neutral Sketch
 
-export class {{DomainName}}Root extends AggregateRoot<{{DomainName}}RootProps> {
-  protected constructor(props: {{DomainName}}RootProps) {
-    super(props);
-  }
+```text
+Aggregate {{DomainName}}
+    state: id, ownerId, status, createdAt, updatedAt
 
-  // ---- Factory Methods ----
+    create(input) -> {{DomainName}}
+        require input.ownerId else error({{DOMAIN_NAME}}_INVALID_OWNER)
+        return new {{DomainName}}(id=new_id(), status=DRAFT, ...)
 
-  // WHY: create() is used for instantiating new domain concepts. It enforces initial invariants.
-  static create(input: Create{{DomainName}}Input): {{DomainName}}Root {
-    if (!input.ownerId) {
-      throw new {{DomainName}}Exception('Owner ID is required', '{{DOMAIN_NAME}}_INVALID_OWNER');
-    }
-    const now = new Date();
-    return new {{DomainName}}Root({
-      id: crypto.randomUUID(),
-      ownerId: input.ownerId,
-      status: E{{DomainName}}Status.DRAFT,
-      createdAt: now,
-      updatedAt: now,
-    });
-  }
+    rehydrate(state) -> {{DomainName}}      # repositories only
 
-  // WHY: rehydrateProps() is used by Repositories to reconstitute existing aggregates from database storage.
-  static rehydrateProps(props: {{DomainName}}RootProps): {{DomainName}}Root {
-    return new {{DomainName}}Root(props);
-  }
+    changeStatus(newStatus)
+        guard transitionAllowed(status, newStatus)   # raises {{DOMAIN_NAME}}_INVALID_TRANSITION
+        previous = status; status = newStatus; touch updatedAt
+        record {{DomainName}}StatusChanged(id, previous, newStatus)
 
-  // ---- Getters ----
-
-  get id(): string {
-    return this.props.id;
-  }
-
-  get ownerId(): string {
-    return this.props.ownerId;
-  }
-
-  get status(): E{{DomainName}}Status {
-    return this.props.status;
-  }
-
-  // ---- Domain Methods ----
-
-  updateStatus(newStatus: E{{DomainName}}Status): void {
-    // WHY: Fail fast with private assertion guard
-    this.assertValidStatusTransition(newStatus);
-
-    const previousStatus = this.props.status;
-    this.props.status = newStatus;
-    this.props.updatedAt = new Date();
-
-    // WHY: Record domain event on aggregate root for downstream side-effects
-    this.addDomainEvent(
-      new {{DomainName}}StatusChangedEvent(
-        this.props.id,
-        previousStatus,
-        newStatus,
-      ),
-    );
-  }
-
-  // ---- Private Guard Clauses ----
-
-  private assertValidStatusTransition(newStatus: E{{DomainName}}Status): void {
-    if (this.props.status === E{{DomainName}}Status.CANCELLED) {
-      throw new {{DomainName}}Exception(
-        'Cannot change status of cancelled {{domainName}}',
-        '{{DOMAIN_NAME}}_CANCELLED',
-      );
-    }
-  }
-}
+    pullDomainEvents() -> events   # returns and clears recorded events
 ```
 
 ## Post-Generation Checklist
-- [ ] Factory methods `create()` and `rehydrateProps()` defined
-- [ ] Business invariants guarded via fail-fast exceptions
-- [ ] Domain events added via `this.addDomainEvent()`
-- [ ] `protected constructor` (not public)
+- [ ] Creation factory and rehydration both exist and are distinct
+- [ ] Every invariant is guarded with a domain error carrying a stable code
+- [ ] Each state change records a domain event
+- [ ] No framework, ORM, or transport import in the file

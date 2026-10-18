@@ -7,6 +7,12 @@ Always loaded. Stack-agnostic. Keep this file under ~50 lines: every line here i
 - Kit status and stack print at session start (SessionStart hook). If status is `fresh`, run `/init-kit` before generating code.
 - Project truth lives in `docs/architecture/service.md` and `docs/architecture/decisions/`. Read them before generating code, not before answering a question.
 
+## Layout and stack
+
+- `{domain}`, `{application}`, `{infrastructure}`, `{api}`, `{tests}` and `{source_root}` in kit files mean the paths in `[layout]` of `.agents/kit.toml`.
+- If `[stack] pack` is set, a file at `.agents/stacks/<pack>/<path>` overrides `.agents/<path>`. Read the pack version first. A relative link inside a pack file with no pack target resolves to the same path in the core.
+- No pack means no stack assumptions: write code in the project's language and libraries, as recorded in `docs/architecture/service.md`.
+
 ## Invariants (every change)
 
 - Dependencies point inward: API / Infrastructure → Application → Domain. Domain imports no framework, ORM, transport, or HTTP library.

@@ -1,12 +1,12 @@
 ---
-description: Hexagonal Architecture (Ports & Adapters) rules
+description: Hexagonal (Ports and Adapters) architecture rules
 paths:
-  - "src/**"
+  - "{source_root}/**"
 ---
 
 # Hexagonal Architecture Rules
 
-- Core domain application sits inside the hexagon.
-- Primary/Driving Adapters (HTTP Controllers, CLI, Sockets) invoke application use cases.
-- Secondary/Driven Adapters (Mongoose Repositories, RabbitMQ Producers, Mailers) implement ports declared in Core/Application layers.
-- Depend on interfaces (ports), not concrete implementations.
+- The domain and application sit inside the hexagon and know nothing about delivery or storage technology.
+- Driving (primary) adapters, such as HTTP or RPC handlers, message consumers, CLI and schedulers, call application use cases.
+- Driven (secondary) adapters, such as repositories, message publishers, mailers and external API clients, implement ports declared inside the hexagon.
+- Depend on ports, not adapters. Swapping an adapter must not change domain or application code.

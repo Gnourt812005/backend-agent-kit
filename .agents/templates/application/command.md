@@ -1,29 +1,33 @@
 ---
 template: command
-placeholders: [FeatureName, FeatureDtoName]
-generates: src/applications/commands/{{featureName}}/{{featureName}}.command.ts
+kind: structure
+placeholders: [FeatureName]
+layer: "{application}"
 ---
 
-# {{FeatureName}} Command Template
+# {{FeatureName}} Command
 
-Command payload class extending NestJS CQRS Command.
+Command: an immutable request to change state, carrying already-validated input and the acting identity.
 
-## Code Blueprint
+This is a **structure spec**: it defines what the artifact must contain, not its syntax. Write it in the project's language, following `rules/global/naming.md` and any `rules/languages/` rule. If the active stack pack has a code blueprint at this same path, use that instead.
 
-```typescript
-// src/applications/commands/{{featureName}}/{{featureName}}.command.ts
-import { Command } from '@nestjs/cqrs';
-import type { {{FeatureDtoName}} } from '@applications/dtos/{{featureName}}.dto';
-import type { {{FeatureDtoName}} as {{FeatureDtoName}}Type } from '@applications/dtos/{{featureName}}.dto';
+## Required Parts
 
-export class {{FeatureName}}Command extends Command<{{FeatureDtoName}}Type> {
-  constructor(public readonly props: {{FeatureDtoName}}) {
-    super();
-  }
-}
+| Part | Requirement |
+|------|-------------|
+| Name | Imperative: `PlaceOrder`, `CancelOrder` |
+| Payload | Validated input DTO fields plus actor/correlation context |
+| Immutability | Read-only after construction |
+
+## Language-Neutral Sketch
+
+```text
+Command {{FeatureName}}
+    actor, correlationId
+    ...validated input fields
 ```
 
 ## Post-Generation Checklist
-- [ ] Extends `Command<Dto>` from `@nestjs/cqrs`
-- [ ] DTO imported from `@applications/dtos/`
-- [ ] Uses `props` property (not `dto`)
+- [ ] Imperative name
+- [ ] Immutable
+- [ ] Contains no domain objects or persistence types

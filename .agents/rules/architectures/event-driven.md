@@ -1,7 +1,7 @@
 ---
 description: Event-Driven architecture and Outbox pattern rules
 paths:
-  - "src/**"
+  - "{source_root}/**"
 ---
 
 # Event-Driven Architecture Rules

@@ -6,8 +6,11 @@ import argparse
 import subprocess
 from datetime import datetime
 
-CORE_FORBIDDEN = [r'@nestjs/', r'mongoose', r'express', r'fastify', r'typeorm', r'prisma', r'axios', r'node-fetch', r'@sgod-']
-APP_FORBIDDEN = [r'src/infrastructure/', r'src/api/', r'@nestjs/microservices', r'mongoose', r'@sgod-']
+sys.dont_write_bytecode = True  # keep .agents/ free of __pycache__ (health check needs a clean tree)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import boundaries  # noqa: E402  (shared, stack-neutral boundary rules)
+
+CFG = boundaries.load_config()
 
 def run_cmd(cmd):
     res = subprocess.run(cmd, shell=True, capture_output=True, text=True)
@@ -51,60 +54,15 @@ def parse_latest_baseline(latest_path):
     return last_hash, violations
 
 def scan_file(file_path, root_dir):
-    rel_path = os.path.relpath(file_path, root_dir)
-    findings = []
-
-    if not os.path.exists(file_path):
-        return findings
-
-    with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
-        lines = f.readlines()
-
-    is_core = rel_path.startswith("src/domain/")
-    is_app = rel_path.startswith("src/applications/")
-    is_api = rel_path.startswith("src/api/")
-
-    for idx, line in enumerate(lines, 1):
-        if not (line.startswith("import ") or line.startswith("from ") or "require(" in line):
-            continue
-
-        if is_core:
-            for pattern in CORE_FORBIDDEN:
-                if re.search(pattern, line):
-                    findings.append({
-                        "file": rel_path,
-                        "line": idx,
-                        "rule": f"Domain layer importing framework/driver ({pattern})",
-                        "risk": "HIGH"
-                    })
-        elif is_app:
-            for pattern in APP_FORBIDDEN:
-                if re.search(pattern, line):
-                    findings.append({
-                        "file": rel_path,
-                        "line": idx,
-                        "rule": f"Applications layer importing infrastructure/api ({pattern})",
-                        "risk": "HIGH"
-                    })
-        elif is_api:
-            for pattern in [r'mongoose', r'@nestjs/mongoose']:
-                if re.search(pattern, line):
-                    findings.append({
-                        "file": rel_path,
-                        "line": idx,
-                        "rule": f"API layer importing database driver ({pattern})",
-                        "risk": "HIGH"
-                    })
-
-    return findings
+    return [{k: f[k] for k in ("file", "line", "rule", "risk")} for f in boundaries.scan_file(file_path, CFG)]
 
 def main():
     parser = argparse.ArgumentParser(description="Git-anchored incremental architecture health check")
-    parser.add_argument("--full", action="store_true", help="Force a full scan of src/")
+    parser.add_argument("--full", action="store_true", help="Force a full scan of the source root")
     args = parser.parse_args()
 
     root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
-    src_dir = os.path.join(root_dir, "src")
+    src_dir = os.path.join(root_dir, CFG["source_root"])
     health_dir = os.path.join(root_dir, "docs/health")
     latest_file = os.path.join(health_dir, "latest.md")
 
@@ -117,16 +75,13 @@ def main():
 
     if scan_mode == "full":
         if os.path.exists(src_dir):
-            for dp, _, fns in os.walk(src_dir):
-                for f in fns:
-                    if f.endswith(".ts") or f.endswith(".js"):
-                        files_to_scan.append(os.path.join(dp, f))
+            files_to_scan.extend(boundaries.files_in(src_dir, CFG))
     else:
-        rc, diff_out, _ = run_cmd(f"git diff --name-only {last_hash}..HEAD -- src/")
+        rc, diff_out, _ = run_cmd(f"git diff --name-only {last_hash}..HEAD -- {CFG['source_root']}/")
         if diff_out:
             for rel in diff_out.splitlines():
                 full_p = os.path.join(root_dir, rel)
-                if os.path.exists(full_p) and (full_p.endswith(".ts") or full_p.endswith(".js")):
+                if os.path.exists(full_p) and os.path.splitext(full_p)[1] in CFG["extensions"]:
                     files_to_scan.append(full_p)
 
     current_findings = []

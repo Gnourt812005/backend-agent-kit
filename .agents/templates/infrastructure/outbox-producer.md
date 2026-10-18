@@ -1,46 +1,36 @@
 ---
 template: outbox-producer
-placeholders: [DomainName, EventName, domainName, eventName]
-generates: src/infrastructure/events/{{domainName}}-{{eventName}}.producer.ts
+kind: structure
+placeholders: [EventName]
+layer: "{infrastructure}"
 ---
 
-# Outbox Event Producer Template
+# {{EventName}} Outbox Producer
 
-Maps domain events to integration events and writes to Transactional Outbox.
+Outbox producer: maps domain events to versioned integration events and writes outbox rows in the current transaction (see skill `uow-outbox`).
 
-## Code Blueprint
+This is a **structure spec**: it defines what the artifact must contain, not its syntax. Write it in the project's language, following `rules/global/naming.md` and any `rules/languages/` rule. If the active stack pack has a code blueprint at this same path, use that instead.
 
-```typescript
-// src/infrastructure/events/{{domainName}}-{{eventName}}.producer.ts
-import { Injectable } from '@nestjs/common';
-import { {{EventName}}Event } from '@domain/events/{{domainName}}-{{eventName}}.event';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { OutboxModel } from '../events/outbox/schemas/outbox.schema';
+## Required Parts
 
-@Injectable()
-export class {{EventName}}Producer {
-  constructor(
-    @InjectModel(OutboxModel.name) private readonly outboxModel: Model<OutboxModel>,
-  ) {}
+| Part | Requirement |
+|------|-------------|
+| Mapping | Domain event → integration event (type, version, payload) |
+| Write | Outbox rows inserted with the caller's transaction context |
+| Routing | Broker destination stored with the row |
+| Context | Correlation ID copied onto the row |
 
-  async produce(event: {{EventName}}Event, session?: unknown): Promise<void> {
-    await this.outboxModel.create(
-      [
-        {
-          event_type: event.eventType,
-          payload: event.payload,
-          status: 'pending',
-        },
-      ],
-      { session },
-    );
-  }
-}
+## Language-Neutral Sketch
+
+```text
+publish(aggregate, tx):
+    for e in aggregate.pullDomainEvents():
+        ie = map(e)                       # skip if not public
+        outbox.insert({id, type: ie.type, version, payload, routing, correlationId, status: pending}, tx)
+    relay.signal()
 ```
 
 ## Post-Generation Checklist
-- [ ] Uses `@domain/events/` path alias
-- [ ] `session` parameter for transaction support
-- [ ] Outbox schema from `@infrastructure/events/outbox/schemas/`
-- [ ] File in `src/infrastructure/events/`
+- [ ] Rows written in the same transaction as the aggregate
+- [ ] Integration event schema versioned and documented
+- [ ] Relay retries bounded; consumers idempotent

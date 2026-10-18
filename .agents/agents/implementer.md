@@ -11,7 +11,7 @@ tools: Read, Write, Edit, Grep, Glob, Bash
 Carry out one precisely-specified implementation step: render a template, write or edit specific files, wire a specific piece of code. Follow the instructions given exactly. Do not reinterpret them, do not fill gaps with assumptions, and do not make architectural, naming, or business-rule decisions that weren't already made by whoever dispatched this task.
 
 ## When Activated
-- Any command or agent that has a fully-specified, single-purpose step to hand off (e.g. "render `templates/domain/aggregate.md` into `src/domain/aggregate-roots/asset.root.ts` with these exact field names").
+- Any command or agent that has a fully-specified, single-purpose step to hand off (e.g. "render `templates/domain/aggregate.md` for the `Order` aggregate into the file path given, with these exact field names").
 - Not for steps that still require judgment calls — those stay with the specialist agent responsible for that judgment (`domain-modeler`, `api-designer`, `architect`, etc.).
 
 ## Inputs

@@ -9,12 +9,12 @@ description: Models aggregate roots, entities, value objects, domain invariants,
 
 1. Read `docs/domains/<domain>/domain.md` for business requirements and invariants.
 2. Identify aggregate boundaries:
-   - Consistency boundary: State changes within an aggregate must be strictly transactional.
-   - Aggregate Root: Single entry point class (`{Name}Root`).
-3. Enforce invariants inside the Aggregate Root:
-   - Provide `static create(input)` factory with invariant checks.
-   - Provide `static rehydrateProps(props)` for database reconstitution.
-   - Use private `assert*()` fail-fast methods.
-4. Represent complex attributes as immutable Value Objects (`BaseValueObject`).
-5. Record state changes as Domain Events using `this.addDomainEvent(new SomeEvent(...))`.
-6. Refer to templates: `.agents/templates/domain/`.
+   - An aggregate is a consistency boundary: everything inside it changes atomically.
+   - Reference other aggregates by identity only.
+3. Enforce invariants inside the aggregate root:
+   - A creation factory that validates the initial invariants.
+   - A rehydration path that rebuilds persisted state without re-running creation rules.
+   - Private fail-fast guards that raise domain errors.
+4. Model validated or compound attributes as immutable value objects.
+5. Record each meaningful state change as a domain event on the aggregate, to be pulled by the application layer after saving.
+6. Render from `.agents/templates/domain/`.

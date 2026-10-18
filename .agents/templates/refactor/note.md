@@ -18,13 +18,13 @@ generates: docs/refactor/{{DateStr}}-{{SeqNum}}-{{ShortDescription}}.md
 
 | Legacy File | Original Lines | Target Layer | Blank Reason | Risk |
 |-------------|----------------|--------------|--------------|------|
-| `src/legacy/path.ts` | 100–150 | Core Aggregate / Repo | DB call mixed with domain logic | HIGH |
+| `<legacy/file/path>` | 100–150 | Domain aggregate / Repository | DB call mixed with domain logic | HIGH |
 
 ## Original Raw Code Snippets
 <!-- Preserves exact raw copy of legacy code blocks before blanking, preventing line-number drift -->
 
-```typescript
-// Raw legacy code snippet 1
+```text
+Raw legacy code snippet 1 (use the source language's fence)
 ```
 
 ## Inferred Intent & Mapping Strategy
@@ -42,5 +42,5 @@ generates: docs/refactor/{{DateStr}}-{{SeqNum}}-{{ShortDescription}}.md
 - [ ] Restored Core Aggregate invariants & VOs
 - [ ] Restored Repository Port & Adapter
 - [ ] Restored Application Command/Query Handler
-- [ ] Restored Presentation Controller & DTO Zod Validation
+- [ ] Restored driving adapter with input validation and authorization
 - [ ] Tests passing & note marked as `done`

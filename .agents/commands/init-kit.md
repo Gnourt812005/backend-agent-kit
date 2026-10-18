@@ -1,16 +1,18 @@
 ---
 name: init-kit
-description: Initialize or adapt the .agents/ kit for a project — scaffolds docs/ for new projects, or guides adaptation of rules/templates/hooks for existing projects.
+description: Initialize the .agents/ kit for a project — writes kit.toml (stack, layout, boundaries) and scaffolds docs/ for new projects, or inventories an existing project and maps it onto the kit without editing core kit files.
 ---
 
 # Command: init-kit
 
 ## Intent
 
-Initialize the `.agents/` kit for a project. Works in two modes:
+Configure the kit for one project. Works in two modes:
 
-- **new-project**: Scaffold fresh `docs/` documentation for a brand new service.
-- **adapt-existing**: Guide the user through customizing the kit's rules, templates, and hooks to match an existing project's conventions.
+- **new-project**: Choose the stack and layout, then scaffold `docs/` for a brand-new service.
+- **adapt-existing**: Inventory an existing codebase, then map its stack and layout onto the kit.
+
+**Core rule: init-kit never edits core kit files** (`rules/`, `templates/`, `skills/`, `commands/`, `agents/`, `hooks/`). Everything project-specific goes into [`kit.toml`](../kit.toml), `docs/`, or a stack pack under [`stacks/`](../stacks/). That keeps the core upgradeable.
 
 ## Preconditions
 
@@ -28,121 +30,83 @@ else:
   → new-project mode (no project docs yet)
 ```
 
-The user can also force a mode with flags:
-- `init-kit --new` — Force new-project mode (overwrites existing with prompt)
-- `init-kit --adapt` — Force adapt-existing mode even without existing docs
+Force a mode with `init-kit --new` or `init-kit --adapt`.
+
+---
+
+## Shared step: choose the stack
+
+1. List the packs in `stacks/` and read each pack's `README.md` (only the README).
+2. Choose one:
+   - **A pack matches** (language, framework, datastore, transport): use it.
+   - **Close but not exact**: copy the closest pack to `stacks/<new-name>/`, then edit the copy.
+   - **Nothing matches**: use no pack. The core structure specs are rendered in the project's language. Offer to create a pack later, once the project's conventions settle.
+3. Record the choice in `kit.toml` under `[stack] pack`.
 
 ---
 
 ## Mode: new-project
 
-Scaffold project documentation and configuration for a new service.
-
 ### Steps
 
 1. Activate [`architect`](../agents/architect.md) agent.
-2. Ask user for any missing identity parameters (or accept defaults from [`AGENT.md`](../AGENT.md)):
-   - Service name, domain summary, target language, framework, datastore, auth mechanism
-3. Scaffold `docs/` structure:
-   - Copy [`templates/docs/service.md`](../templates/docs/service.md) → `docs/architecture/service.md` and fill identity
-   - Create `docs/architecture/glossary.md` (blank table)
-   - Copy [`templates/docs/adr.md`](../templates/docs/adr.md) → `docs/architecture/decisions/001-initial-architecture.md`
-   - Create `docs/tech/stack.md` and `docs/tech/integrations.md`
-   - Create `docs/domains/` directory and copy [`templates/docs/domain.md`](../templates/docs/domain.md) → `docs/domains/_template.md`
-4. Run [`after-generate.sh`](../hooks/after-generate.sh) to confirm `docs/` readiness.
-5. **Mark kit as configured** — Create or update [`kit.toml`](../kit.toml):
-   - Set `status = "configured"`
-   - Set `mode = "new-project"`
-   - Set `initialized_at` to current date
-   - Fill `project.name`, `project.language`, `project.framework` from user answers
-
-### Deliverables
-
-- Fully scaffolded `docs/` directory
-- `docs/architecture/service.md` filled with project metadata
-- ADR 001 recorded
-- `docs/domains/_template.md` ready for new domains
-- [`kit.toml`](../kit.toml) set to `configured`
+2. Ask the user for missing identity parameters: service name, domain summary, language, framework, datastore, broker, transport, auth mechanism.
+3. Run **Shared step: choose the stack**.
+4. Write `kit.toml`:
+   - `[project]` name, language, framework
+   - `[layout]` layer directories (use the pack README's defaults if a pack was chosen) and `source_extensions`
+   - `[boundaries]` forbidden imports per layer (frameworks, ORMs, drivers, transports)
+5. Scaffold `docs/`:
+   - [`templates/docs/service.md`](../templates/docs/service.md) → `docs/architecture/service.md`, filled in
+   - `docs/architecture/glossary.md` (blank table)
+   - [`templates/docs/adr.md`](../templates/docs/adr.md) → `docs/architecture/decisions/001-initial-architecture.md`, recording the stack and architecture choices with the alternatives considered
+   - `docs/tech/stack.md` and `docs/tech/integrations.md`
+   - `docs/domains/` directory
+6. Mark the kit configured: `status = "configured"`, `mode = "new-project"`, `initialized_at` = today.
+7. Run `.agents/hooks/sync-claude-native.sh`, then [`after-generate.sh`](../hooks/after-generate.sh).
 
 ### Stop Conditions
 
-- If `docs/architecture/service.md` already exists and `--new` not passed, switch to `adapt-existing` mode instead.
+- If `docs/architecture/service.md` already exists and `--new` was not passed, switch to adapt-existing.
 
 ---
 
 ## Mode: adapt-existing
 
-Adapt the `.agents/` kit to match an existing project's conventions.
-
-### Before You Start
-
-Have ready: the project's `src/` directory structure (`find src/ -type d | sort`), its `package.json` dependencies (or language equivalent), 1-2 sample files if the codebase needs the refactor pipeline afterward, and a sense of the desired end-state architecture.
-
 ### Steps
 
-1. **Inventory project** — Render [`templates/docs/inventory.md`](../templates/docs/inventory.md) → `docs/architecture/inventory.md` and fill it in:
-   - Run `find src/ -type d | sort` to map directories
-   - Run `find src/ -type f -name "*.ts" | head -80` to sample file patterns
-   - Check `package.json` for framework dependencies
-   - Answer every question in the rendered inventory doc (directory structure, naming conventions, base classes, framework patterns) — ask the user for anything not inferable from the codebase
-
-2. **Customize rules** — Update `.agents/rules/` to match project conventions:
-   - `rules/global/naming.md` — Update class/file naming matrix, directory paths, DI token format, path aliases
-   - `rules/global/dependency-rule.md` — Verify layer directory names
-   - `rules/languages/` — Replace if language differs (e.g., Python, Go, Rust)
-   - `rules/frameworks/` — Replace if framework differs (e.g., Fastify, Gin, FastAPI)
-   - `rules/architectures/` — Verify architecture references match project
-   - Every rule file — set its `paths:` frontmatter globs to the project's real layer directories, so each rule loads only when matching files are touched
-
-3. **Customize templates** — Update `.agents/templates/` to use the project's:
-   - Import paths and path aliases
-   - Base class names and locations
-   - ORM/ODM schema patterns
-   - Controller and validation patterns
-   - Auth guard patterns
-
-4. **Customize hooks** — Update `.agents/hooks/` regex patterns:
-   - `validate-boundaries.sh` — Framework packages and directory structure
-   - `validate-imports.sh` — Application layer import rules
-   - `check-health.py` — `CORE_FORBIDDEN` / `APP_FORBIDDEN` package lists
-
-5. **Customize stack-specific skills & commands** — Replace or update:
-   - Skills: `cqrs-generator`, `repository-design`, `uow-outbox`, `api-contract-design`, `event-contract-design`, `domain-modeling`, `testing-strategy`, `security-review`
-   - Commands: `add-domain`, `add-use-case`, `add-endpoint`, `add-event`, `add-tech`, `add-migration`, `create-tests`
-
-6. **Update `AGENT.md`** — Edit the `## Dedicated Technology Stack` section to match the project's language, framework, database, and messaging.
-
-7. **Verify kit health**:
-   - Run [`validate-links.sh`](../hooks/validate-links.sh) `--fix` to repair broken markdown links
-   - Run [`after-generate.sh`](../hooks/after-generate.sh) for boundary validation
-
-8. **Mark kit as configured** — Create or update [`kit.toml`](../kit.toml):
-   - Set `status = "configured"`
-   - Set `mode = "adapt-existing"`
-   - Set `initialized_at` to current date
-   - Fill `project.name`, `project.language`, `project.framework` from inventory
-   - Set `layout.source_root` to the project's source directory
-
-9. **Regenerate Claude Code wiring** — Run `.agents/hooks/sync-claude-native.sh` so `.claude/rules/` picks up the adapted rules and paths.
+1. **Inventory** — Render [`templates/docs/inventory.md`](../templates/docs/inventory.md) → `docs/architecture/inventory.md` and answer every question from the codebase:
+   - Map the directory tree of the source root (e.g. `find <source_root> -type d | sort`).
+   - Sample 50–80 source file names to learn naming patterns.
+   - Read the dependency manifest (`package.json`, `go.mod`, `pyproject.toml`, `pom.xml`, …) for framework, datastore, broker, validation, and test libraries.
+   - Ask the user only for what the code cannot answer.
+2. Run **Shared step: choose the stack**.
+3. **Map the layout** — Fill `[layout]` in `kit.toml` with the project's real layer directories. If the project has no clear layers yet, set the target layout and plan [`refactor-align`](refactor-align.md).
+4. **Set boundaries** — Fill `[boundaries]` from the dependency manifest: every framework, ORM, driver, and transport library the domain (and application) must not import.
+5. **Record conventions** — Naming and structure conventions that differ from the chosen pack go into that pack's `rules/global/naming.md`, or into a new pack. Never edit the core `rules/`.
+6. **Write project docs** — `docs/architecture/service.md` if missing, and an ADR recording the adoption decision.
+7. Mark the kit configured: `status = "configured"`, `mode = "adapt-existing"`, `initialized_at` = today.
+8. **Regenerate and verify**:
+   - Run `.agents/hooks/sync-claude-native.sh`, so `.claude/rules/` gets real paths and pack overrides.
+   - Run [`validate-links.sh`](../hooks/validate-links.sh).
+   - Run [`check-health.sh`](../hooks/check-health.sh) `--full` to baseline existing boundary violations, instead of failing on them.
 
 ### Deliverables
 
-- `docs/architecture/inventory.md` filled with project conventions
-- `.agents/` rules, templates, and hooks updated to match project conventions
-- `AGENT.md` stack section aligned with project
-- Clean link validation and boundary checks passing
-- [`kit.toml`](../kit.toml) set to `configured`
+- `docs/architecture/inventory.md` answered
+- `kit.toml` configured (project, stack pack, layout, boundaries)
+- A health baseline in `docs/health/`
+- No changes to core kit files
 
 ### Notes
 
-- The **Universal Meta-Kits** (`spec-*`, `refactor-*`, `review-architecture`, `repair-kit`) must NOT be modified — they are stack-agnostic and work identically across any project.
-- Refer to the full [Customization Matrix](../README.md#-customization-checklist) in the kit README for detailed guidance.
-- To refactor existing messy code after adaptation, use [`refactor-align`](refactor-align.md) then [`refactor-restore`](refactor-restore.md).
+- The universal workflows (`spec-*`, `refactor-*`, `review-architecture`, `repair-kit`) are stack-agnostic and must never be modified per project.
+- To clean up legacy code after adoption, use [`refactor-align`](refactor-align.md), then [`refactor-restore`](refactor-restore.md).
 
 ---
 
 ## Related
 
-- [`init-session`](init-session.md) — Warm up and anchor session context (run every session after `init-kit`)
+- [`init-session`](init-session.md) — Optional per-session project context load
 - [`repair-kit`](repair-kit.md) — Validate and repair markdown links across `.agents/`
 - [`review-architecture`](review-architecture.md) — Git-anchored health check for ongoing drift detection

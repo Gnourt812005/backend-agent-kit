@@ -1,6 +1,7 @@
 # .agents/kit.toml
-# Kit configuration status — tracks whether .agents/ has been initialized for this project.
-# Created/updated by `init-kit` command. Read by `init-session` command.
+# Per-project kit configuration. This is the ONLY kit file a project should edit;
+# everything else in .agents/ is the shared core (plus an optional stack pack).
+# Written by `init-kit`. Read by hooks, the sync script, and `init-session`.
 
 [kit]
 status = "fresh"             # "fresh" | "configured"
@@ -10,7 +11,30 @@ initialized_at = ""          # ISO 8601 date when init-kit was last run
 [project]
 name = ""                    # Service/project name
 language = ""                # e.g., "typescript", "go", "python"
-framework = ""               # e.g., "nestjs", "gin", "fastapi"
+framework = ""               # e.g., "nestjs", "gin", "fastapi", "none"
+
+[stack]
+pack = ""                    # e.g., "nestjs-mongo" → .agents/stacks/nestjs-mongo/ overrides core files; "" = none
 
 [layout]
-source_root = "src"          # where PostToolUse boundary checks apply; init-kit sets this
+# Layer directories, relative to the repo root. Kit files refer to them as
+# {source_root}, {domain}, {application}, {infrastructure}, {api}, {tests}.
+source_root = "src"
+domain = "src/domain"
+application = "src/application"
+infrastructure = "src/infrastructure"
+api = "src/api"
+tests = "tests"
+source_extensions = []       # e.g., [".ts"], [".go"], [".py"]; empty = common source extensions
+
+[boundaries]
+# Regexes matched against import lines. Layer-direction checks are automatic;
+# these add libraries a layer must never import (frameworks, ORMs, drivers, transports).
+domain_forbidden = []
+application_forbidden = []
+api_forbidden = []
+
+[commands]
+# Project commands the hooks run. Empty = skip with a notice.
+lint = ""                    # e.g., "npm run lint", "golangci-lint run", "ruff check ."
+test = ""                    # e.g., "npm test", "go test ./...", "pytest"

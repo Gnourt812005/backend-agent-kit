@@ -1,29 +1,31 @@
 ---
 template: api-dto
+kind: structure
 placeholders: [FeatureName]
-generates: src/api/grpc/{{featureName}}.grpc.dto.ts
+layer: "{api}"
 ---
 
-# gRPC DTO Template
+# {{FeatureName}} Transport Contract
 
-Request/Response DTO for gRPC API boundaries.
+Transport contract: the wire shape for an endpoint (request/response body, RPC message, or event payload) and its mapping to application DTOs.
 
-## Code Blueprint
+This is a **structure spec**: it defines what the artifact must contain, not its syntax. Write it in the project's language, following `rules/global/naming.md` and any `rules/languages/` rule. If the active stack pack has a code blueprint at this same path, use that instead.
 
-```typescript
-// src/api/grpc/{{featureName}}.grpc.dto.ts
-import { ApiProperty } from '@nestjs/swagger';
+## Required Parts
 
-export class {{FeatureName}}ResponseDto {
-  @ApiProperty({ description: 'Unique identifier' })
-  id: string;
+| Part | Requirement |
+|------|-------------|
+| Wire shape | Matches the transport definition (OpenAPI, proto, or schema registry) |
+| Versioning | Breaking changes go to a new version |
+| Mapping | Wire ↔ application DTO in the adapter |
 
-  @ApiProperty({ description: 'Operation status' })
-  status: string;
-}
+## Language-Neutral Sketch
+
+```text
+{{FeatureName}}Request  -> {{FeatureName}}Input
+{{FeatureName}}Output -> {{FeatureName}}Response
 ```
 
 ## Post-Generation Checklist
-- [ ] File in `src/api/grpc/`
-- [ ] Uses `@nestjs/swagger` for documentation
-- [ ] Response DTO only (request DTOs use Zod schemas from `@applications/dtos/`)
+- [ ] Contract defined in the transport's schema format
+- [ ] Backward-compatible or versioned

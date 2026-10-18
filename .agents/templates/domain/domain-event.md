@@ -1,37 +1,35 @@
 ---
 template: domain-event
-placeholders: [EventName, eventName]
-generates: src/domain/events/{{eventName}}.event.ts
+kind: structure
+placeholders: [EventName]
+layer: "{domain}"
 ---
 
-# {{EventName}} Domain Event Template
+# {{EventName}} Domain Event
 
-Domain Event captured during aggregate state change.
+Domain event: an immutable record of a business fact that already happened, named in the past tense.
 
-## Code Blueprint
+This is a **structure spec**: it defines what the artifact must contain, not its syntax. Write it in the project's language, following `rules/global/naming.md` and any `rules/languages/` rule. If the active stack pack has a code blueprint at this same path, use that instead.
 
-```typescript
-// src/domain/events/{{eventName}}.event.ts
-import { EAggregateType } from '../enums/aggregate-type.enum';
-import { DomainEvent } from './domain-event.base';
+## Required Parts
 
-export interface {{EventName}}Payload {
-  previousStatus: string;
-  newStatus: string;
-}
+| Part | Requirement |
+|------|-------------|
+| Name | Past tense: `OrderPlaced`, `PaymentFailed` |
+| Payload | Aggregate ID plus the minimal facts consumers need; no aggregates or persistence models |
+| Metadata | Event ID and occurred-at time; correlation ID is attached by the application layer |
+| Immutability | Read-only after construction |
 
-export class {{EventName}}Event extends DomainEvent<{{EventName}}Payload> {
-  readonly eventType = '{{eventName}}';
-  readonly aggregateType = EAggregateType.{{AGGREGATE_TYPE}};
+## Language-Neutral Sketch
 
-  constructor(assetId: string, previousStatus: string, newStatus: string) {
-    super(assetId, { previousStatus, newStatus });
-  }
-}
+```text
+DomainEvent {{EventName}}
+    eventId, occurredAt
+    aggregateId
+    ...facts (primitives or value objects)
 ```
 
 ## Post-Generation Checklist
-- [ ] Extends `DomainEvent<Payload>`
-- [ ] `eventType` and `aggregateType` readonly properties
-- [ ] File named `<name>.event.ts`
-- [ ] Import from `./domain-event.base`
+- [ ] Past-tense name in the ubiquitous language
+- [ ] Immutable
+- [ ] Mapped to an integration event only in infrastructure, if published

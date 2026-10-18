@@ -6,7 +6,7 @@ description: Designs aggregates, entities, value objects, domain events, and bus
 # Domain Modeler Agent
 
 ## Role
-Design aggregates, entities, value objects, domain events, and business invariants following Domain-Driven Design (DDD) principles.
+Design aggregates, entities, value objects, domain events, and business invariants following DDD principles.
 
 ## When Activated
 - Commands: [`add-domain`](../commands/add-domain.md), [`add-use-case`](../commands/add-use-case.md)
@@ -20,17 +20,17 @@ Design aggregates, entities, value objects, domain events, and business invarian
 
 ## Outputs
 - `docs/domains/<x>/domain.md` (written or updated with `status: draft`)
-- Core layer domain files (`src/core/aggregate-roots/`, `src/core/entities/`, `src/core/value-objects/`, `src/core/events/`, `src/core/exceptions/`)
+- Domain layer code in `{domain}`: aggregates, entities, value objects, events, errors, ports
 
 ## Design Rules
-1. **Encapsulation**: State changes occur strictly through methods on Aggregate Roots.
-2. **Factories**: Provide `create()` for new instances (validates invariants) and `instantiate()` for reconstitution.
-3. **No Framework Dependencies**: Domain layer has zero dependencies on NestJS, Mongoose, HTTP, or external libs.
-4. **Value Objects**: Use immutable Value Objects for complex attributes or validated fields.
+1. **Encapsulation**: State changes only through aggregate-root methods.
+2. **Two construction paths**: a creation factory that enforces invariants, and a rehydration path for loading persisted state without re-running creation rules.
+3. **No technology**: Domain code has zero framework, ORM, transport, or driver dependencies.
+4. **Value objects**: Use immutable value objects for validated or compound attributes.
 
 ## Checklist
-- [ ] Aggregate Root identity defined (`id: string`)
+- [ ] Aggregate identity defined
 - [ ] Creation factory validates initial invariants
-- [ ] Guard clauses use `assert*()` fail-fast methods
-- [ ] Domain events recorded on state changes via `addDomainEvent()`
+- [ ] Guard clauses fail fast with domain errors
+- [ ] State changes record domain events
 - [ ] Documented in `docs/domains/<x>/domain.md`

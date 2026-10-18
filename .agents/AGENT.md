@@ -17,7 +17,7 @@ Help engineers create backend modules that are:
 1. **Read context first** — load `docs/architecture/service.md` and relevant domain docs under `docs/domains/` before generating code.
 2. **Select architecture** — use skill [`architecture-selector`](skills/architecture-selector/SKILL.md) unless the project already declares one in `docs/architecture/decisions/`.
 3. **Delegate to specialists** — route work to agents in [`.agents/agents/`](agents/) by concern.
-4. **Follow rules** — apply [`.agents/rules/global/`](rules/global/) always. Load language, framework, and architecture rules (e.g. `rules/languages/typescript.md`, `rules/frameworks/nestjs.md`, `rules/architectures/*.md`) as needed during implementation.
+4. **Follow rules** — apply [`.agents/rules/global/`](rules/global/) always. Architecture rules live in `rules/architectures/`; language and framework rules come from the active stack pack. In Claude Code all rules load automatically by path.
 5. **Use templates** — generate code and docs from [`.agents/templates/`](templates/); never invent ad-hoc layering.
 6. **Maintain documentation** — update `docs/` when introducing new domains, endpoints, events, or architecture decisions. Whenever you reject a plausible alternative, record why: cross-domain/architectural calls go in an ADR (`docs/architecture/decisions/`, `templates/docs/adr.md` — has an "Alternatives Considered" section), single-domain calls go in that domain's `domain.md` §10 Decisions. This is plain committed markdown, readable by any agent working in this repo — not Claude Code's private, machine-local auto memory, which is fine for personal build-command/debugging notes but wrong for anything another agent or teammate needs to see.
 7. **Validate** — run hooks under [`.agents/hooks/`](hooks/) after generation when possible.
@@ -31,7 +31,7 @@ Help engineers create backend modules that are:
 | [`api-designer`](agents/api-designer.md) | REST/RPC contracts, DTOs, versioning in `docs/domains/<x>/api.md` |
 | [`database-engineer`](agents/database-engineer.md) | Schemas, migrations, repository adapters in `docs/domains/<x>/schema.md` |
 | [`event-designer`](agents/event-designer.md) | Domain/integration events, producers/consumers in `docs/domains/<x>/events.md` |
-| [`security-reviewer`](agents/security-reviewer.md) | AuthN/Z, threat model, secrets, NestJS guard stacks |
+| [`security-reviewer`](agents/security-reviewer.md) | AuthN/Z, threat model, secrets, input trust boundaries |
 | [`test-engineer`](agents/test-engineer.md) | Test strategy, fixtures, coverage gates |
 | [`code-reviewer`](agents/code-reviewer.md) | Boundary, import, and quality review |
 | [`implementer`](agents/implementer.md) | Executes fully-specified steps literally; escalates instead of guessing when blocked |
@@ -44,14 +44,14 @@ Every file in [`.agents/commands/`](commands/) declares `name` + `description` i
 
 Invariants live in [`CORE.md`](CORE.md) (always loaded). Detailed layer rules live in [`rules/`](rules/) and load per path. Do not restate either here.
 
-## Stack Profile
+## Stack
 
-The kit is stack-agnostic; this section declares the **active** stack profile, which `init-kit` rewrites per project. The default profile shipped with the kit:
-- **Language**: TypeScript (Strict mode, ES2022)
-- **Framework**: NestJS (Modular Architecture, `@nestjs/cqrs`)
-- **Architecture**: Hexagonal (Ports & Adapters) + DDD Tactical Patterns + CQRS
-- **Persistence**: MongoDB via Mongoose Schemas & Session-aware Repository Adapters
-- **Messaging**: Transactional Outbox Pattern + RabbitMQ Integration Events
+The core kit is **stack-neutral**. Its default *architecture* is Hexagonal (Ports & Adapters) + DDD tactical patterns + CQRS + Transactional Outbox, expressed without any framework or library.
+
+The *stack* is per project:
+- `[project]` and `[layout]` in [`kit.toml`](kit.toml) declare the language, framework, and layer directories (`{domain}`, `{application}`, `{infrastructure}`, `{api}`, `{tests}`).
+- `[stack] pack` optionally selects a stack pack in [`stacks/`](stacks/). A pack is an overlay: a file at `stacks/<pack>/<path>` overrides `.agents/<path>`, and a link inside a pack file with no pack target resolves against the core.
+- Without a pack, render structure-spec templates in the project's language.
 
 ## Workflow Checklist (direct changes)
 

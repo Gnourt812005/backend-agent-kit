@@ -1,31 +1,38 @@
 ---
 template: repository-interface
-placeholders: [DomainName, domainName, DOMAIN_NAME]
-generates: src/domain/ports/repositories/{{domainName}}.repository.port.ts
+kind: structure
+placeholders: [DomainName]
+layer: "{domain}"
 ---
 
-# {{DomainName}} Repository Port Template
+# {{DomainName}} Repository Ports
 
-Domain repository port interface + Symbol Dependency Injection Token.
+Repository ports: interfaces in domain terms for loading and saving the aggregate (write side) and for reading DTOs (read side).
 
-## Code Blueprint
+This is a **structure spec**: it defines what the artifact must contain, not its syntax. Write it in the project's language, following `rules/global/naming.md` and any `rules/languages/` rule. If the active stack pack has a code blueprint at this same path, use that instead.
 
-```typescript
-// src/domain/ports/repositories/{{domainName}}.repository.port.ts
-import { {{DomainName}}Root } from '../../aggregate-roots/{{domainName}}.root';
-import type { Nullable } from '@shared/types/common.type';
+## Required Parts
 
-export const {{DOMAIN_NAME}}_REPOSITORY = Symbol('{{DOMAIN_NAME}}_REPOSITORY');
+| Part | Requirement |
+|------|-------------|
+| Write port | `findById(id)`, `save(aggregate, tx?)`, and other aggregate-level operations; nothing else |
+| Read port | Query methods returning DTOs or pages of DTOs for query handlers |
+| Transaction context | Write methods accept an optional unit-of-work context |
+| No leakage | No query builders, driver types, or storage concepts in signatures |
 
-export interface {{DomainName}}RepositoryPort {
-  save(aggregate: {{DomainName}}Root, options?: { session?: unknown }): Promise<{{DomainName}}Root>;
-  findById(id: string, options?: { session?: unknown }): Promise<Nullable<{{DomainName}}Root>>;
-  delete(id: string): Promise<void>;
-}
+## Language-Neutral Sketch
+
+```text
+port {{DomainName}}Repository
+    findById(id) -> {{DomainName}} | none
+    save(aggregate, tx?)
+
+port {{DomainName}}ReadRepository
+    getById(id) -> {{DomainName}}Dto | none
+    list(filter, page) -> Page<{{DomainName}}ListItemDto>
 ```
 
 ## Post-Generation Checklist
-- [ ] Interface named `{Name}RepositoryPort`
-- [ ] File named `<name>.repository.port.ts`
-- [ ] Symbol DI token exported in `SCREAMING_SNAKE_CASE`
-- [ ] `session` parameter on write methods for UoW support
+- [ ] Signatures speak the domain language only
+- [ ] Write port returns aggregates; read port returns DTOs
+- [ ] Ports bound to adapters only in the composition root

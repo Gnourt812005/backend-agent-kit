@@ -1,5 +1,6 @@
 ---
 template: mongoose-schema
+kind: code
 placeholders: [DomainName, domainName]
 generates: src/infrastructure/persistence/mongoose/schemas/{{domainName}}.schema.ts
 ---

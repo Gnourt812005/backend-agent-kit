@@ -10,15 +10,15 @@ Audit the codebase for architectural drift using a Git-anchored, incremental hea
 
 ## Preconditions
 - Clean Git working directory (all changes must be committed before execution)
-- Active codebase under `src/`
+- Active codebase under `layout.source_root` (`.agents/kit.toml`)
 
 ## Steps
 1. Activate [`architect`](../agents/architect.md) and [`code-reviewer`](../agents/code-reviewer.md) agents.
 2. Verify Git working directory is clean (`git status --porcelain`).
    - If dirty, prompt developer to commit changes first.
 3. Check for `docs/health/latest.md`:
-   - If missing or `--full` passed → Run **Bootstrap Mode** (Full scan of `src/`).
-   - If present → Run **Incremental Mode** (`git diff {last_hash}..HEAD -- src/`).
+   - If missing or `--full` passed → Run **Bootstrap Mode** (full scan of the source root).
+   - If present → Run **Incremental Mode** (`git diff {last_hash}..HEAD -- <source_root>`).
 4. Run validation script:
    - [`check-health.sh`](../hooks/check-health.sh)
 5. Generate report files:

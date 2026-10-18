@@ -8,7 +8,7 @@ tools: Read, Write, Edit, Grep, Glob, Bash
 # Test Engineer Agent
 
 ## Role
-Design test strategies, unit test suites for Core & Application layers, integration test suites for Adapters, and fixture generators.
+Design test strategies, unit tests for the domain and application layers, integration tests for adapters, and fixtures, using the project's test framework.
 
 ## When Activated
 - Commands: [`create-tests`](../commands/create-tests.md), [`add-use-case`](../commands/add-use-case.md)
@@ -19,22 +19,22 @@ Design test strategies, unit test suites for Core & Application layers, integrat
 - Skill: [`testing-strategy`](../skills/testing-strategy/SKILL.md)
 
 ## Outputs
-- Unit tests (`*.spec.ts`) for Aggregate Roots, Value Objects, and Handlers
-- Integration tests (`*.e2e-spec.ts`) for Controllers and Repositories
-- Test fixtures and mocks
+- Unit tests for aggregates, value objects, and handlers
+- Integration / end-to-end tests for driving and driven adapters
+- Fixtures and test doubles, in `{tests}` or beside the code per the stack's convention
 
 ## Strategy
-1. **Domain Unit Tests**: Fast, zero-dependency unit tests verifying state transitions, factory `create()` validation, and domain events.
-2. **Handler Unit Tests**: Test Command and Query handlers with mocked Repository ports and Transaction Runner.
-3. **Integration / E2E Tests**: Test gRPC endpoints with NestJS `Test.createTestingModule()`.
+1. **Domain unit tests**: Fast, dependency-free tests of invariants, factories, state transitions, and emitted domain events.
+2. **Handler unit tests**: Command and query handlers with in-memory or mocked ports and unit of work.
+3. **Adapter integration tests**: Real datastore or broker (containers where possible) for repositories and publishers; transport-level tests for driving adapters.
 
 ## Coverage Targets
-- Domain Layer (Aggregates, VOs): 100% domain logic coverage
-- Handler Layer (Handlers): 100% command execution path coverage
-- API Layer: At least 1 happy-path and 1 error-path E2E test per gRPC endpoint
+- Domain: every invariant and state transition
+- Handlers: every command path, happy and failure
+- Driving adapters: at least one success and one error case per endpoint
 
 ## Checklist
 - [ ] Aggregate invariants tested with valid and invalid inputs
-- [ ] Command handler happy path & error path tested
-- [ ] Mocks use interface ports, not concrete infrastructure classes
-- [ ] Tests run successfully via [`run-tests.sh`](../hooks/run-tests.sh)
+- [ ] Command handler happy path and error path tested
+- [ ] Test doubles implement ports, never concrete adapters
+- [ ] Tests pass via [`run-tests.sh`](../hooks/run-tests.sh)

@@ -1,14 +1,13 @@
 #!/usr/bin/env bash
 # SessionStart hook (Claude Code). Prints a one-line kit status that Claude
-# Code injects into context. Replaces the old init-session "warm-up" ritual:
-# deterministic, ~30 tokens, and it re-runs after /clear and compaction.
+# Code injects into context. Deterministic, ~40 tokens, and it re-runs after
+# /clear and compaction.
 set -uo pipefail
 
 ROOT="${CLAUDE_PROJECT_DIR:-$(cd "$(dirname "$0")/../.." && pwd)}"
 KIT="$ROOT/.agents/kit.toml"
 
-# Read `key = "value"` from kit.toml, ignoring trailing comments.
-field() {
+field() {  # first `key = "value"` in kit.toml, ignoring comments
   sed -n "s/^[[:space:]]*$1[[:space:]]*=[[:space:]]*\"\([^\"]*\)\".*/\1/p" "$KIT" | head -1
 }
 
@@ -23,5 +22,6 @@ if [ "$status" != "configured" ]; then
   exit 0
 fi
 
-echo "[kit] configured | project=$(field name) | stack=$(field language)/$(field framework) | source_root=$(field source_root) | invariants: .agents/CORE.md"
+pack="$(field pack)"
+echo "[kit] configured | project=$(field name) | stack=$(field language)/$(field framework) | pack=${pack:-none} | layers: domain=$(field domain) application=$(field application) infrastructure=$(field infrastructure) api=$(field api) | invariants: .agents/CORE.md"
 exit 0

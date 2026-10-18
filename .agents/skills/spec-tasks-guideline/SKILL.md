@@ -16,7 +16,7 @@ description: Generates a dependency-ordered checklist of fine-grained, granular 
 4. Organize tasks into 4 ordered phases:
    - **Phase 1: Core Domain** (Enums → Value Objects → Entities → Aggregate Root → Domain Events → Repository Port)
    - **Phase 2: Application Layer** (Command DTOs & Handlers → Query Handlers → Mappers)
-   - **Phase 3: Infrastructure & Presentation** (Mongoose Schema → Repository Adapter → Read Service → Module → Controller)
+   - **Phase 3: Infrastructure & Presentation** (Persistence Model → Repository Adapter → Read Repository → Composition Root → Driving Adapter)
    - **Phase 4: Verification & Docs Convergence** (Unit Tests → Integration Tests → Validation Hooks → Sync `docs/`)
 5. **Tag every task** with `[deps: ...]`, `[effort: ...]`, `[file: ...]` (see the "Task Tags" section in [`templates/spec/tasks.md`](../../templates/spec/tasks.md)):
    - `deps`: list every task ID (`T{phase}.{n}`) whose output this task reads or extends. Depend only on what's actually needed — under-specifying deps risks a race, over-specifying kills parallelism.

@@ -1,42 +1,38 @@
 ---
 template: controller
-placeholders: [DomainName, domainName, FeatureName, featureName]
-generates: src/api/grpc/{{domainName}}.grpc.controller.ts
+kind: structure
+placeholders: [DomainName, FeatureName]
+layer: "{api}"
 ---
 
-# {{DomainName}} gRPC Controller Template
+# {{DomainName}} Driving Adapter
 
-Thin NestJS gRPC Controller dispatching Commands/Queries via CommandBus/QueryBus.
+Driving adapter (HTTP route, RPC method, or message handler): turns transport input into a command or query and maps the result back.
 
-## Code Blueprint
+This is a **structure spec**: it defines what the artifact must contain, not its syntax. Write it in the project's language, following `rules/global/naming.md` and any `rules/languages/` rule. If the active stack pack has a code blueprint at this same path, use that instead.
 
-```typescript
-// src/api/grpc/{{domainName}}.grpc.controller.ts
-import { Controller } from '@nestjs/common';
-import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { GrpcMethod } from '@nestjs/microservices';
-import { {{FeatureName}}Dto } from '@applications/dtos/{{domainName}}-{{featureName}}.dto';
-import { {{FeatureName}}Command } from '@applications/commands/{{domainName}}-{{featureName}}/{{domainName}}-{{featureName}}.command';
+## Required Parts
 
-@Controller()
-export class {{DomainName}}GrpcController {
-  constructor(
-    private readonly commandBus: CommandBus,
-    private readonly queryBus: QueryBus,
-  ) {}
+| Part | Requirement |
+|------|-------------|
+| Input | Parse and validate into the input DTO; reject invalid input with the error envelope |
+| Identity | Resolve the actor from the transport (token, metadata, message header) |
+| Authorization | Authenticated by default; per-use-case permission check |
+| Dispatch | Exactly one command or query per operation |
+| Errors | Map domain and application errors to transport errors with stable codes |
 
-  @GrpcMethod('{{DomainName}}Service', 'Create{{DomainName}}')
-  async create(dto: {{FeatureName}}Dto): Promise<{ id: string }> {
-    // WHY: Thin controller delegates execution directly to CommandBus
-    const id = await this.commandBus.execute(new {{FeatureName}}Command(dto));
-    return { id };
-  }
-}
+## Language-Neutral Sketch
+
+```text
+on <route | rpc method | topic>:
+    input = validate({{FeatureName}}Input, request)        # 400 / INVALID_ARGUMENT on failure
+    actor = authenticate(request); authorize(actor, "{{feature}}")
+    result = dispatch({{FeatureName}}Command(input, actor))
+    return toResponse(result)
 ```
 
 ## Post-Generation Checklist
-- [ ] Uses `@GrpcMethod` decorator (not `@Post`)
-- [ ] Uses `@nestjs/microservices` for gRPC
-- [ ] DTOs from `@applications/dtos/`
-- [ ] Commands from `@applications/commands/`
-- [ ] Uses `@applications/`, `@domain/` path aliases
+- [ ] No business logic in the adapter
+- [ ] Auth required unless explicitly public
+- [ ] Errors use the shared envelope
+- [ ] Contract documented in `docs/domains/<x>/api.md`

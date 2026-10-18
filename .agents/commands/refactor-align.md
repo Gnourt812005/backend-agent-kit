@@ -9,7 +9,7 @@ description: Phase 1 of legacy refactoring — restructure messy modules into Cl
 Execute Phase 1 Architecture Alignment on a messy legacy module. Restructure files into Clean/Hexagonal layers, blank out tangled DB/external logic, insert inline backlinks (`// see: docs/refactor/...`), create Refactor Notes in `docs/refactor/`, and verify boundary hooks pass.
 
 ## Preconditions
-- Messy legacy module path (e.g. `src/modules/campaign/`)
+- Messy legacy module path (e.g. `<source_root>/modules/campaign/`)
 
 ## Steps
 1. Activate [`architect`](../agents/architect.md) and [`code-reviewer`](../agents/code-reviewer.md) agents.

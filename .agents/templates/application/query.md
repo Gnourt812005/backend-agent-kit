@@ -1,34 +1,32 @@
 ---
 template: query
+kind: structure
 placeholders: [FeatureName]
-generates: src/applications/queries/{{featureName}}/{{featureName}}.query.ts
+layer: "{application}"
 ---
 
-# {{FeatureName}} Query Template
+# {{FeatureName}} Query
 
-Query payload class.
+Query: an immutable read request with filter and pagination parameters.
 
-## Code Blueprint
+This is a **structure spec**: it defines what the artifact must contain, not its syntax. Write it in the project's language, following `rules/global/naming.md` and any `rules/languages/` rule. If the active stack pack has a code blueprint at this same path, use that instead.
 
-```typescript
-// src/applications/queries/{{featureName}}/{{featureName}}.query.ts
-import { Query } from '@nestjs/cqrs';
+## Required Parts
 
-export interface {{FeatureName}}Filters {
-  enterpriseId: string;
-  search?: string;
-  limit?: number;
-  cursor?: string;
-}
+| Part | Requirement |
+|------|-------------|
+| Name | `Get…`, `List…`, `Find…` |
+| Payload | Filters, sort, pagination, actor for authorization |
+| Immutability | Read-only |
 
-export class {{FeatureName}}Query extends Query<unknown> {
-  constructor(public readonly filters: {{FeatureName}}Filters) {
-    super();
-  }
-}
+## Language-Neutral Sketch
+
+```text
+Query {{FeatureName}}
+    actor
+    filter, sort, page
 ```
 
 ## Post-Generation Checklist
-- [ ] Extends `Query` from `@nestjs/cqrs`
-- [ ] Filters interface defined
-- [ ] File named `<feature>.query.ts`
+- [ ] Read-only intent
+- [ ] Pagination bounded with a maximum page size

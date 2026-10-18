@@ -1,24 +1,25 @@
 ---
 name: add-migration
-description: Create a database migration or schema evolution script to handle data model changes in MongoDB.
+description: Create a database migration or schema evolution script, with apply and rollback, for a data model change.
 ---
 
 # Command: add-migration
 
 ## Intent
-Create a database migration or schema evolution script for data model changes.
+Create a migration for a data model change, using the project's migration tool.
 
 ## Preconditions
-- Migration target (collection/table), change summary (indexes, new fields, data backfill)
+- Target (table or collection), change summary (indexes, new fields, backfill)
 
 ## Steps
 1. Activate [`database-engineer`](../agents/database-engineer.md) agent.
-2. Read target domain schema in `src/infrastructure/persistence/mongoose/schemas/` or `docs/domains/<domain>/domain.md`.
-3. Create migration script in `src/infrastructure/mongo/migrations/`.
-4. Ensure migration contains both `up()` (apply) and `down()` (rollback) steps.
-5. Update `docs/domains/<domain>/domain.md` schema documentation.
-6. Run [`after-generate.sh`](../hooks/after-generate.sh).
+2. Read the persistence model in `{infrastructure}` and `docs/domains/<domain>/domain.md`.
+3. Create the migration where the project's migration tool expects it.
+4. Include both apply and rollback steps. If a step cannot be rolled back, say so in the migration and the PR.
+5. Make large backfills batched and resumable.
+6. Update the schema documentation in `docs/domains/<domain>/domain.md`.
+7. Run [`after-generate.sh`](../hooks/after-generate.sh).
 
 ## Deliverables
-- Executable migration script with `up` and `down` handlers
+- Migration with apply and rollback
 - Updated schema documentation

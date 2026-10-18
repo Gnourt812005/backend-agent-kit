@@ -1,23 +1,11 @@
 #!/usr/bin/env bash
-set -euo pipefail
-
-ROOT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
-SRC_DIR="$ROOT_DIR/src"
-
-echo "==> [validate-imports] Checking Applications layer imports..."
-
-if [ ! -d "$SRC_DIR/applications" ]; then
-  echo "    No src/applications directory found, skipping import check."
-  exit 0
-fi
-
-# Applications layer must not import concrete infrastructure classes or API controllers
-VIOLATIONS=$(grep -rnE "from ['\"](\.\./\.\./infrastructure/persistence/mongoose/repositories|\.\./\.\./api)" "$SRC_DIR/applications" || true)
-
-if [ -n "$VIOLATIONS" ]; then
-  echo "❌ IMPORT VIOLATION: Applications layer imports concrete infrastructure repositories or API controllers!"
-  echo "$VIOLATIONS"
-  exit 1
-else
-  echo "✅ Applications layer imports clean."
-fi
+# Application and API layers must not import adapters or forbidden libraries.
+# Layer paths and forbidden patterns come from [layout] / [boundaries] in .agents/kit.toml.
+set -uo pipefail
+HOOKS_DIR="$(cd "$(dirname "$0")" && pwd)"
+status=0
+echo "==> [validate-imports] Checking application layer imports..."
+python3 -I "$HOOKS_DIR/boundaries.py" --layer application || status=1
+echo "==> [validate-imports] Checking api layer imports..."
+python3 -I "$HOOKS_DIR/boundaries.py" --layer api || status=1
+exit $status

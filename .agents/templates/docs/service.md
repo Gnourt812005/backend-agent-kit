@@ -4,8 +4,9 @@
 - **Name**: {{ServiceName}}
 - **Owner Team**: {{OwnerTeam}}
 - **Repo / Path**: {{RepoPath}}
-- **Language**: TypeScript
-- **Framework**: NestJS
+- **Language**: {{Language}}
+- **Framework**: {{Framework}}
+- **Stack pack**: {{StackPack or none}}
 - **Architecture**: Hexagonal + DDD + CQRS + Event-Driven
 
 ## Purpose
@@ -21,14 +22,14 @@
 - Consistency Model: Eventual consistency across bounded contexts via Outbox
 
 ## Runtime Stack
-- Datastore: MongoDB (Mongoose)
-- Message Bus: Kafka
-- Cache: Redis
-- Search: Elasticsearch
-- Auth Mechanism: gRPC metadata + CASL authorization
-- API: gRPC + Kafka (not REST)
+- Datastore: {{Datastore and access library}}
+- Message Bus: {{Broker, or none}}
+- Cache: {{Cache, or none}}
+- Search: {{Search engine, or none}}
+- Auth Mechanism: {{Authentication and authorization approach}}
+- API: {{Transport(s): REST / gRPC / GraphQL / messaging}}
 
 ## Deployment
 - Runtime Target: Docker / Kubernetes
-- Config Strategy: Environment variables via `@nestjs/config`
+- Config Strategy: {{e.g. environment variables via the framework's config module}}
 - Secrets Strategy: K8s Secrets / Secret Manager

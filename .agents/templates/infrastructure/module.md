@@ -1,56 +1,34 @@
 ---
 template: module
-placeholders: [DomainName, domainName, DOMAIN_NAME]
-generates: src/infrastructure/modules/{{domainName}}.module.ts
+kind: structure
+placeholders: [DomainName]
+layer: "composition root"
 ---
 
-# {{DomainName}} Feature Module Template
+# {{DomainName}} Wiring
 
-NestJS `@Module` wiring gRPC controllers, command/query handlers, and Symbol DI tokens.
+Wiring: binds the domain's ports to adapters and registers its handlers and driving adapters, using the project's DI or manual wiring.
 
-## Code Blueprint
+This is a **structure spec**: it defines what the artifact must contain, not its syntax. Write it in the project's language, following `rules/global/naming.md` and any `rules/languages/` rule. If the active stack pack has a code blueprint at this same path, use that instead.
 
-```typescript
-// src/infrastructure/modules/{{domainName}}.module.ts
-import { Module } from '@nestjs/common';
-import { CqrsModule } from '@nestjs/cqrs';
-import { PersistenceModule } from '@infrastructure/persistence/persistence.module';
-import { IntegrationsModule } from '@infrastructure/integrations/integrations.module';
-import { {{DomainName}}GrpcController } from '@api/grpc/{{domainName}}.grpc.controller';
-import { {{DomainName}}CreateHandler } from '@applications/commands/{{domainName}}-create/{{domainName}}-create.handler';
-import { {{DomainName}}UpdateHandler } from '@applications/commands/{{domainName}}-update/{{domainName}}-update.handler';
-import { {{DomainName}}DeleteHandler } from '@applications/commands/{{domainName}}-delete/{{domainName}}-delete.handler';
-import { {{DomainName}}FindByIdHandler } from '@applications/queries/{{domainName}}-find-by-id/{{domainName}}-find-by-id.handler';
-import { {{DomainName}}ListHandler } from '@applications/queries/{{domainName}}-list/{{domainName}}-list.handler';
+## Required Parts
 
-const COMMAND_HANDLERS = [
-  {{DomainName}}CreateHandler,
-  {{DomainName}}UpdateHandler,
-  {{DomainName}}DeleteHandler,
-];
+| Part | Requirement |
+|------|-------------|
+| Bindings | Every port → one adapter |
+| Handlers | Command and query handlers registered with the dispatch mechanism |
+| Adapters | Driving adapters registered with the transport |
+| Scope | The only place that references adapters by concrete type |
 
-const QUERY_HANDLERS = [
-  {{DomainName}}FindByIdHandler,
-  {{DomainName}}ListHandler,
-];
+## Language-Neutral Sketch
 
-@Module({
-  imports: [CqrsModule, PersistenceModule, IntegrationsModule],
-  controllers: [{{DomainName}}GrpcController],
-  providers: [
-    ...COMMAND_HANDLERS,
-    ...QUERY_HANDLERS,
-  ],
-  exports: [
-    ...COMMAND_HANDLERS,
-    ...QUERY_HANDLERS,
-  ],
-})
-export class {{DomainName}}Module {}
+```text
+wire {{DomainName}}:
+    bind {{DomainName}}Repository -> <Tech>{{DomainName}}Repository
+    bind {{DomainName}}ReadRepository -> <Tech>{{DomainName}}ReadRepository
+    register handlers, register driving adapter
 ```
 
 ## Post-Generation Checklist
-- [ ] Imports `CqrsModule`, `PersistenceModule`, `IntegrationsModule`
-- [ ] gRPC controller listed in `controllers`
-- [ ] Handlers listed as arrays in `providers` and `exports`
-- [ ] Uses `@applications/`, `@api/`, `@infrastructure/` path aliases
+- [ ] Each port bound exactly once
+- [ ] No adapter referenced outside the composition root

@@ -1,18 +1,19 @@
 ---
 name: security-review
-description: Audits endpoints, guards, data masking, injection vulnerabilities, and secrets handling.
+description: Audits endpoints, authentication and authorization, data masking, injection risks, and secrets handling.
 ---
 
 # Security Review Skill
 
 ## Instructions
 
-1. Verify endpoint guard stack:
-   - Default: `ApiKeyGuard` → `JwtAuthGuard` → `RolesGuard` → `UserVerifiedGuard`.
-   - Explicit bypass: `@Public()` for public endpoints, `@WebHook()` for webhook callbacks.
-2. Check input validation:
-   - Every input payload must be validated with Zod DTO schema.
+1. Verify authentication and authorization:
+   - Every entry point is authenticated by default; public and webhook endpoints are opted out explicitly.
+   - Authorization is checked per use case.
+2. Check input handling:
+   - Every input is validated into a typed DTO at the adapter.
+   - External content (requests, messages, files, scraped data, LLM output) is treated as untrusted; check for injection into queries, shells, templates, and prompts.
 3. Check data exposure:
-   - Ensure passwords, tokens, or PII are masked in logs, domain events, and response DTOs.
+   - Passwords, tokens, keys, and PII are masked or omitted in logs, events, and responses.
 4. Verify secrets handling:
-   - Ensure no credentials or API keys are committed in source code or `docs/`.
+   - No credentials in source, tests, fixtures, or `docs/`; all come from the environment or a secret manager.

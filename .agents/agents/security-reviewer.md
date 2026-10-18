@@ -22,17 +22,17 @@ Review authentication/authorization, input sanitization, data exposure, secrets 
 
 ## Outputs
 - Security audit findings and mitigations
-- Guard configuration (`JwtAuthGuard`, `RolesGuard`, `ApiKeyGuard`)
+- Authentication / authorization configuration for driving adapters
 
 ## Focus Areas
-1. **Guard Stack Order**: CASL-based authorization (`@sgod-casl/library`) with gRPC metadata guards.
-2. **Explicit Protection**: All endpoints protected by default unless decorated with `@Public()` or `@WebHook()`.
-3. **Data Protection**: Prevent PII leakage in logs, events, or response DTOs.
-4. **Injection Prevention**: Input validation via Zod schemas at presentation boundary.
-5. **No Hardcoded Secrets**: Credentials loaded strictly from environment variables.
+1. **Auth by default**: Every entry point is authenticated unless explicitly and visibly marked public or webhook.
+2. **Per-use-case authorization**: Permission checks match the use case, not just the route.
+3. **Data protection**: No PII or secrets in logs, events, or response DTOs.
+4. **Input validation**: All input validated at the adapter boundary; external content treated as untrusted.
+5. **No hardcoded secrets**: Credentials come from the environment or a secret manager only.
 
 ## Checklist
-- [ ] Authentication required on external entrypoints
-- [ ] Role/Permission checks enforced per use case
+- [ ] Authentication required on external entry points
+- [ ] Role/permission checks enforced per use case
 - [ ] Sensitive data masked in logs and integration events
-- [ ] No raw secrets or environment variables hardcoded
+- [ ] No raw secrets or credentials in source, tests, or docs

@@ -1,22 +1,18 @@
 ---
-description: Structured logging, correlation IDs, and metrics requirements
+description: Structured logging and correlation rules
 paths:
-  - "src/**"
-  - "test/**"
+  - "{source_root}/**"
 ---
 
 # Observability Rules
 
-## Structured Logging
+## Structured logging
 
-- Log in JSON format in production.
-- Every log entry MUST include:
-  - `timestamp` (ISO 8601)
-  - `level` (`info`, `warn`, `error`, `debug`)
-  - `correlationId` / `traceId` (propagated via `AsyncLocalStorage` middleware)
-  - `domain` or `context` module name
+- Log structured records (JSON in production), never free-form strings only.
+- Every record includes: timestamp (ISO 8601), level, correlation/trace ID, and the module or bounded context.
+- Log at adapter boundaries and on failure paths. Domain code does not log; it raises domain errors or records events.
 
-## Correlation ID Propagation
+## Correlation
 
-- Propagate `x-correlation-id` header across HTTP requests, transactional outbox events, and RabbitMQ message headers.
-- Include `correlationId` when executing Unit of Work transactions.
+- Accept or create a correlation ID at every entry point (request, message, job).
+- Propagate it through use cases, outbox records, outgoing messages, and outgoing calls.

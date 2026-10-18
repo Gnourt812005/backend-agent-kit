@@ -1,53 +1,35 @@
 ---
 template: entity
-placeholders: [DomainName, EntityName, domainName, entityName]
-generates: src/domain/entities/{{domainName}}-{{entityName}}.entity.ts
+kind: structure
+placeholders: [DomainName, EntityName]
+layer: "{domain}"
 ---
 
-# {{EntityName}} Entity Template
+# {{EntityName}} Entity
 
-Domain entity belonging to {{DomainName}} Aggregate Root.
+Entity: a child object with its own identity that lives inside an aggregate and changes only through its aggregate root.
 
-## Code Blueprint
+This is a **structure spec**: it defines what the artifact must contain, not its syntax. Write it in the project's language, following `rules/global/naming.md` and any `rules/languages/` rule. If the active stack pack has a code blueprint at this same path, use that instead.
 
-```typescript
-// src/domain/entities/{{domainName}}-{{entityName}}.entity.ts
-import { Entity } from '../base/base.entity';
+## Required Parts
 
-export interface {{EntityName}}EntityProps {
-  id: string;
-  name: string;
-  active: boolean;
-}
+| Part | Requirement |
+|------|-------------|
+| Identity | Unique within the aggregate (or globally, if the domain needs it) |
+| State | Domain attributes only |
+| Behavior | Methods for its own invariants, called by the aggregate root |
+| Access | Never loaded or saved on its own; always through the aggregate |
 
-export class {{EntityName}}Entity extends Entity<{{EntityName}}EntityProps> {
-  protected constructor(props: {{EntityName}}EntityProps) {
-    super(props);
-  }
+## Language-Neutral Sketch
 
-  static create(props: Omit<{{EntityName}}EntityProps, 'id'>): {{EntityName}}Entity {
-    return new {{EntityName}}Entity({
-      ...props,
-      id: crypto.randomUUID(),
-    });
-  }
-
-  static rehydrateProps(props: {{EntityName}}EntityProps): {{EntityName}}Entity {
-    return new {{EntityName}}Entity(props);
-  }
-
-  get id(): string { return this.props.id; }
-  get name(): string { return this.props.name; }
-  get active(): boolean { return this.props.active; }
-
-  deactivate(): void {
-    this.props.active = false;
-  }
-}
+```text
+Entity {{EntityName}}  (inside {{DomainName}})
+    state: id, ...
+    create(input) -> {{EntityName}}     # validates own invariants
+    rename(newName)                     # called by the aggregate root
 ```
 
 ## Post-Generation Checklist
-- [ ] Extends `Entity` (not `BaseEntity`)
-- [ ] `protected constructor`
-- [ ] `create()` and `rehydrateProps()` factory methods
-- [ ] File named `<name>.entity.ts`
+- [ ] Has identity and equality by identity
+- [ ] Not referenced directly by other aggregates
+- [ ] Mutated only via the aggregate root

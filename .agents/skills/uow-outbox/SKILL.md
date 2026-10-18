@@ -1,124 +1,76 @@
 ---
 name: uow-outbox
-description: You are a Transactional Integrity & Event-Driven Architecture specialist. Your goal is to implement the Transaction Runner pattern and Outbox pattern for reliable event delivery across service boundaries.
-category: infrastructure
-displayName: UoW & Outbox Expert
-bundle: [infrastructure-persistence]
+description: Implements the unit-of-work (transaction runner) and transactional outbox patterns for atomic writes and reliable event delivery. Use when a write must publish events, or when wiring persistence and messaging together.
 ---
 
-# Transaction Runner & Outbox Pattern
+# Unit of Work and Transactional Outbox
 
-This skill teaches you how to use the `MongoTransactionRunnerPort` for transactional safety and the Outbox pattern for reliable event delivery.
+Stack-specific implementations come from the active stack pack (`.agents/stacks/<pack>/skills/uow-outbox/` overrides this file).
 
-## Transaction Runner (MongoDB Transactions)
+## Unit of work (transaction runner)
 
-### How It Works
+A port that runs a function inside one datastore transaction and hands it a transaction context:
 
-The `MongoTransactionRunnerPort` wraps operations in a MongoDB session with explicit transaction management. Sessions are passed explicitly to repository methods.
-
-```typescript
-// src/domain/ports/services/mongo-transaction-runner.port.ts
-export const MONGO_TRANSACTION_RUNNER = Symbol('MONGO_TRANSACTION_RUNNER');
-
-export interface MongoTransactionRunnerPort {
-  runInTransaction<T>(fn: (session: unknown) => Promise<T>): Promise<T>;
-}
+```
+port TransactionRunner:
+    run_in_transaction(work: (tx) -> T) -> T
 ```
 
-### Usage in Handlers
+Rules:
+1. Every command handler runs its write path inside `run_in_transaction`.
+2. The transaction context is passed explicitly to every repository `save` and to the event publisher.
+3. Repositories accept the transaction context as an optional argument and join it.
+4. Queries never use the transaction runner.
 
-```typescript
-@CommandHandler(AssetCreateCommand)
-export class AssetCreateHandler implements ICommandHandler<AssetCreateCommand> {
-  constructor(
-    @Inject(ASSET_REPOSITORY) private readonly repo: AssetRepositoryPort,
-    @Inject(MONGO_TRANSACTION_RUNNER) private readonly mongoTx: MongoTransactionRunnerPort,
-    @Inject(EVENT_SERVICE) private readonly eventService: IEventService,
-  ) {}
-
-  async execute(command: AssetCreateCommand): Promise<AssetDto> {
-    return this.mongoTx.runInTransaction(async (session) => {
-      // All DB operations within this block share the same transaction
-      const aggregate = AssetRoot.create(command.props);
-      const saved = await this.repo.save(aggregate, { session });
-      await this.eventService.publishEvents(saved, session);
-      return saved.id;
-    });
-  }
-}
+```
+handle(PlaceOrder cmd):
+    return tx_runner.run_in_transaction(tx =>
+        order = Order.create(cmd.input)          # invariants enforced here
+        repo.save(order, tx)
+        event_publisher.publish(order, tx)       # writes outbox rows in the same tx
+        return order.id)
 ```
 
-### Key Rules
+## Transactional outbox
 
-1. Every write handler must use `this.mongoTx.runInTransaction()`.
-2. The `session` is passed explicitly to repository `save()` and `publishEvents()` calls.
-3. Repositories accept `session` via `options?: { session?: unknown }`.
-4. `EventService.publishEvents()` accepts `session` as second argument.
-5. Read operations (queries) do NOT use Transaction Runner.
-
-## Outbox Pattern (Reliable Event Delivery)
-
-The Outbox pattern ensures events are never lost: events are persisted in the same MongoDB transaction as the aggregate, then delivered asynchronously to Kafka.
+Events must never be lost or published for a write that rolled back.
 
 ### Flow
 
 ```
-1. Handler saves aggregate (Transaction Runner)
-2. Handler calls eventService.publishEvents(aggregate, session)
-3. EventService:
-   a. Extracts domain events from aggregate
-   b. Maps them to integration events via DomainEventMapper
-   c. Inserts outbox records into MongoDB (same transaction!)
-   d. Triggers OutboxEventEmitter
-4. OutboxProcessorService (push via event + pull via cron every 10s):
-   a. Reads pending outbox records
-   b. Dispatches to Kafka
-   c. Marks as DONE (or FAILED after 5 retries)
+1. Handler saves the aggregate inside the unit of work
+2. Handler calls event_publisher.publish(aggregate, tx)
+3. Publisher:
+   a. pulls pending domain events from the aggregate
+   b. maps them to integration events
+   c. inserts outbox rows in the SAME transaction
+   d. signals the relay (optional, for low latency)
+4. Relay (push on signal + periodic poll):
+   a. claims pending rows
+   b. sends them to the broker
+   c. marks them done, or failed after a bounded number of retries
 ```
 
-### Outbox Schema
+### Outbox record
 
-```typescript
-{
-  event_type: string,      // e.g., 'asset.created'
-  payload: object,          // event data
-  transport: {              // nullable — Kafka routing info
-    routingKey: string,
-    exchange?: string,
-  },
-  status: 'pending' | 'processing' | 'done' | 'failed',
-  retry_count: number,      // max 5
-  max_retry: number,        // 5
-  created_at: Date,
-  processed_at: Date,
-  error_reason: string,
-}
-```
+| Field | Purpose |
+|-------|---------|
+| `id` | Unique event ID, also used by consumers for deduplication |
+| `event_type` | e.g. `order.placed` |
+| `event_version` | Schema version of the payload |
+| `payload` | Serialized integration event |
+| `routing` | Broker destination (topic, exchange, routing key), nullable |
+| `correlation_id` | Propagated from the originating request |
+| `status` | `pending` / `processing` / `done` / `failed` |
+| `retry_count`, `max_retry` | Bounded retries |
+| `created_at`, `processed_at`, `error_reason` | Operations and debugging |
 
-### Event Service
+### Delivery guarantees
 
-```typescript
-async publishEvents(
-  aggregate: AggregateRoot<unknown> | AggregateRoot<unknown>[],
-  session?: unknown,
-): Promise<void> {
-  const aggregates = Array.isArray(aggregate) ? aggregate : [aggregate];
-  const domainEvents = aggregates.flatMap(agg => {
-    const events = [...agg.pullDomainEvents()];
-    return events;
-  });
-  if (domainEvents.length === 0) return;
-
-  const integrationEvents = this.eventMapper.mapToIntegrationEvents(domainEvents);
-  if (integrationEvents.length === 0) return;
-
-  // Insert into outbox — joins active Transaction Runner session
-  await this.outboxModel.insertMany(outboxRows, { session });
-  this.outboxEmitter.emit(); // trigger immediate processing
-}
-```
+- The relay gives **at-least-once** delivery, so every consumer must be idempotent.
+- Claiming rows must be safe with several relay instances (row locking, conditional update, or a lease).
 
 ## See Also
 
-- `.agents/rules/architectures/event-driven.md` — event-driven architecture
-- `.agents/skills/repository-design/SKILL.md` — repository implementation
+- `.agents/rules/architectures/event-driven.md`
+- `.agents/skills/repository-design/SKILL.md`

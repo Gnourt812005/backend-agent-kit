@@ -47,16 +47,30 @@ def validate_and_repair(fix=False):
                 resolved_target = os.path.abspath(os.path.join(file_dir, target_path_part))
 
                 # Check if target exists (or if it's a planned doc in docs/ which might not be scaffolded yet)
-                # Ignore un-scaffolded docs/ or specs/ paths if init-project / spec-specify hasn't run yet
+                # Ignore un-scaffolded docs/ or specs/ paths if init-kit / spec-specify hasn't run yet
                 if target_path_part.startswith("docs/") or "/docs/" in target_path_part or "../docs/" in target_path_part or target_path_part.startswith("specs/") or "/specs/" in target_path_part or "../specs/" in target_path_part:
                     continue
+
+                # Stack packs are overlays: a link in .agents/stacks/<pack>/<x> that has
+                # no pack target resolves against the same location in the core.
+                if not os.path.exists(resolved_target):
+                    stacks_dir = os.path.join(agents_dir, "stacks") + os.sep
+                    if file_path.startswith(stacks_dir):
+                        pack_root = os.path.join(stacks_dir, os.path.relpath(file_path, stacks_dir).split(os.sep)[0])
+                        core_dir = os.path.join(agents_dir, os.path.relpath(file_dir, pack_root))
+                        if os.path.exists(os.path.abspath(os.path.join(core_dir, target_path_part))):
+                            continue
 
                 if not os.path.exists(resolved_target):
                     target_basename = os.path.basename(target_path_part)
                     
                     # Try to find target file by basename inside .agents/
                     candidate_path = None
+                    in_pack = file_path.startswith(os.path.join(agents_dir, "stacks") + os.sep)
                     for dp, _, fns in os.walk(agents_dir):
+                        # never "repair" a core link into a stack pack
+                        if not in_pack and dp.startswith(os.path.join(agents_dir, "stacks")):
+                            continue
                         if target_basename in fns:
                             candidate_path = os.path.join(dp, target_basename)
                             break

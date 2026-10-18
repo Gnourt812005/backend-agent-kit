@@ -1,31 +1,31 @@
 ---
 template: mapper
-placeholders: [DomainName, domainName]
-generates: src/applications/mappers/{{domainName}}-dto.mapper.ts
+kind: structure
+placeholders: [DomainName, FeatureName]
+layer: "{application}"
 ---
 
-# {{DomainName}} Mapper Template
+# {{DomainName}} Mapper
 
-Bidirectional mapper converting between Aggregate Roots and Application DTOs.
+Mapper: converts between aggregates and output DTOs (and from input DTOs to domain inputs).
 
-## Code Blueprint
+This is a **structure spec**: it defines what the artifact must contain, not its syntax. Write it in the project's language, following `rules/global/naming.md` and any `rules/languages/` rule. If the active stack pack has a code blueprint at this same path, use that instead.
 
-```typescript
-// src/applications/mappers/{{domainName}}-dto.mapper.ts
-import { {{DomainName}}Root } from '@domain/aggregate-roots/{{domainName}}.root';
+## Required Parts
 
-export class {{DomainName}}DtoMapper {
-  static toDto(aggregate: {{DomainName}}Root): Record<string, unknown> {
-    return {
-      id: aggregate.id,
-      ownerId: aggregate.ownerId,
-      status: aggregate.status,
-    };
-  }
-}
+| Part | Requirement |
+|------|-------------|
+| Direction | Aggregate → DTO for responses; input DTO → domain input for commands |
+| Purity | No I/O; deterministic |
+| Location | Application layer; persistence mapping belongs to the repository adapter |
+
+## Language-Neutral Sketch
+
+```text
+toDto({{DomainName}}) -> {{DomainName}}Dto
+toCreateInput({{FeatureName}}Input) -> Create{{DomainName}}Input
 ```
 
 ## Post-Generation Checklist
-- [ ] Uses `@domain/` path alias
-- [ ] File in `src/applications/mappers/`
-- [ ] Returns `Record<string, unknown>` (not `any`)
+- [ ] No persistence or transport concerns
+- [ ] Pure functions, unit-tested
