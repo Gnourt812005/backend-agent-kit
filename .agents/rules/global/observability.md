@@ -1,6 +1,8 @@
 ---
-trigger: always_on
 description: Structured logging, correlation IDs, and metrics requirements
+paths:
+  - "src/**"
+  - "test/**"
 ---
 
 # Observability Rules

@@ -1,34 +1,33 @@
 ---
 name: init-session
-description: Warm up and anchor the agent session to .agents/ conventions by loading architecture rules, naming standards, and layer constraints — run at the start of every session.
+description: Optional. Load project truth (service doc and ADR index) before a coding session and print a short status. Kit invariants are already loaded automatically, so do not re-read .agents/.
 ---
 
 # Command: init-session
 
 ## Intent
-Warm up and anchor the agent session to the workspace's `.agents/` conventions by activating the `initialize-session-context` skill. This ensures the model operates under precise alignment with project-specific guardrails without generating verbose output.
 
-## Preconditions
-- `.agents/` directory is present
-- `.agents/kit.toml` exists with `status = "configured"`
+Load the *project's* context (not the kit's) when you are about to generate code. Kit invariants come from `.agents/CORE.md` (auto-loaded) and layer rules load from `.claude/rules/` when matching files are touched, so this command never scans `.agents/`.
 
 ## Steps
-1. Read [`kit.toml`](../kit.toml) for kit status and project metadata.
-2. Read [`.agents/AGENT.md`](../AGENT.md) for operating model, constraints, and workflow.
-3. Activate skill [`initialize-session-context`](../skills/initialize-session-context/SKILL.md).
 
-## Deliverables
-- Anchored session context aligned with `.agents/` conventions
-- Concise architecture keyword summary
-- Ready for source code ingestion
+Read exactly these, and nothing else:
 
-## Usage
-Run this command at the start of every session before generating code or refactoring:
+1. `.agents/kit.toml`. If `status` is not `configured`, stop and tell the user to run [`init-kit`](init-kit.md).
+2. `docs/architecture/service.md`, if it exists.
+3. The **file names only** in `docs/architecture/decisions/` (list the directory; do not open the ADRs). Open an ADR later only when a task touches its decision.
 
-```bash
-# This command activates the initialize-session-context skill
-# which scans .agents/ and anchors the session
+## Output
+
+Reply with exactly this block, filled in from what you read, and nothing else:
+
+```
+Project:   <name> (<language>/<framework>)
+Service:   <one-line purpose from service.md, or "service.md missing">
+ADRs:      <count> — <comma-separated short titles, max 8>
+Next:      <"ready" | "run /init-kit" | "fill docs/architecture/service.md">
 ```
 
-## Stop Conditions
-- If [`kit.toml`](../kit.toml) is missing or has `status = "fresh"`, prompt user to run [`init-kit`](init-kit.md) first.
+## Budget
+
+This command should add roughly 1–3k tokens of context. If `service.md` is much larger than that, it needs a summary section at the top; read only that section.

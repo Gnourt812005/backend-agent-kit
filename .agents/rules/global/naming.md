@@ -1,6 +1,8 @@
 ---
-trigger: always_on
 description: Naming conventions for classes, interfaces, files, and DI tokens
+paths:
+  - "src/**"
+  - "test/**"
 ---
 
 # Naming Conventions

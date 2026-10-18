@@ -1,6 +1,8 @@
 ---
-trigger: always_on
 description: Mandatory layer dependency rules for Clean / Hexagonal Architecture
+paths:
+  - "src/**"
+  - "test/**"
 ---
 
 # Layer Dependency Rule

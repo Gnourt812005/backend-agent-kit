@@ -1,6 +1,8 @@
 ---
-trigger: always_on
 description: Security constraints, auth guard order, data masking, and secret handling
+paths:
+  - "src/**"
+  - "test/**"
 ---
 
 # Security Rules

@@ -38,18 +38,15 @@ Help engineers create backend modules that are:
 
 ## Commands
 
-Every file in [`.agents/commands/`](commands/) declares `name` + `description` in frontmatter. Match user intent against those descriptions before generating anything ad hoc — a command that already covers the request wins over freehand generation. Run `init-session` first in every new session; it is not optional.
+Every file in [`.agents/commands/`](commands/) declares `name` + `description` in frontmatter. Match user intent against those descriptions before generating anything ad hoc — a command that already covers the request wins over freehand generation. Kit invariants are already in context via `CORE.md`; `init-session` is optional and only loads project docs.
 
 ## Hard Constraints
 
-- Every public use case needs at least one unit test and one integration path.
-- Do not invent business rules — ask or write to `docs/domains/<x>/domain.md` with `status: draft`.
+Invariants live in [`CORE.md`](CORE.md) (always loaded). Detailed layer rules live in [`rules/`](rules/) and load per path. Do not restate either here.
 
-Architecture boundaries (layer dependencies, error handling, naming, security, observability, coding standards) live in [`rules/global/`](rules/global/) — already loaded on every change per Operating Model step 4. Do not restate them here.
+## Stack Profile
 
-## Dedicated Technology Stack
-
-This kit is strictly specialized for the following production stack:
+The kit is stack-agnostic; this section declares the **active** stack profile, which `init-kit` rewrites per project. The default profile shipped with the kit:
 - **Language**: TypeScript (Strict mode, ES2022)
 - **Framework**: NestJS (Modular Architecture, `@nestjs/cqrs`)
 - **Architecture**: Hexagonal (Ports & Adapters) + DDD Tactical Patterns + CQRS

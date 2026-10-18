@@ -1,5 +1,7 @@
 ---
 description: Event-Driven architecture and Outbox pattern rules
+paths:
+  - "src/**"
 ---
 
 # Event-Driven Architecture Rules

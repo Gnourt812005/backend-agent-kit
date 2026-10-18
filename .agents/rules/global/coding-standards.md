@@ -1,6 +1,8 @@
 ---
-trigger: always_on
 description: TypeScript coding standards, type safety, and strictness rules
+paths:
+  - "src/**"
+  - "test/**"
 ---
 
 # Coding Standards

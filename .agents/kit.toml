@@ -11,3 +11,6 @@ initialized_at = ""          # ISO 8601 date when init-kit was last run
 name = ""                    # Service/project name
 language = ""                # e.g., "typescript", "go", "python"
 framework = ""               # e.g., "nestjs", "gin", "fastapi"
+
+[layout]
+source_root = "src"          # where PostToolUse boundary checks apply; init-kit sets this

@@ -1,5 +1,8 @@
 ---
 description: CQRS pattern write-side commands vs read-side queries rules
+paths:
+  - "src/applications/**"
+  - "src/api/**"
 ---
 
 # CQRS Rules

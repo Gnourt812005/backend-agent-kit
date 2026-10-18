@@ -92,6 +92,7 @@ Have ready: the project's `src/` directory structure (`find src/ -type d | sort`
    - `rules/languages/` — Replace if language differs (e.g., Python, Go, Rust)
    - `rules/frameworks/` — Replace if framework differs (e.g., Fastify, Gin, FastAPI)
    - `rules/architectures/` — Verify architecture references match project
+   - Every rule file — set its `paths:` frontmatter globs to the project's real layer directories, so each rule loads only when matching files are touched
 
 3. **Customize templates** — Update `.agents/templates/` to use the project's:
    - Import paths and path aliases
@@ -120,6 +121,9 @@ Have ready: the project's `src/` directory structure (`find src/ -type d | sort`
    - Set `mode = "adapt-existing"`
    - Set `initialized_at` to current date
    - Fill `project.name`, `project.language`, `project.framework` from inventory
+   - Set `layout.source_root` to the project's source directory
+
+9. **Regenerate Claude Code wiring** — Run `.agents/hooks/sync-claude-native.sh` so `.claude/rules/` picks up the adapted rules and paths.
 
 ### Deliverables
 

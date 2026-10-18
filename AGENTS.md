@@ -2,27 +2,23 @@
 
 This repository uses the Practical Backend Architecture Agent kit under [`.agents/`](.agents/).
 
-## Always load first
+## Start here
 
-1. Run [`init-session`](.agents/commands/init-session.md) to anchor session context to `.agents/` conventions.
-2. Read [`.agents/AGENT.md`](.agents/AGENT.md) for operating model, constraints, and workflow.
-3. Read project truth in `docs/architecture/service.md` and `docs/architecture/decisions/` before generating code.
-4. Read relevant domain specifications in `docs/domains/` before editing domain features.
-5. Follow rules in [`.agents/rules/global/`](.agents/rules/global/) on every change.
+1. Read `.agents/CORE.md`: the always-on invariants. Claude Code loads it automatically; other agents should read it first.
+2. Check `.agents/kit.toml`. If `status` is not `configured`, run [`init-kit`](.agents/commands/init-kit.md) before generating code.
+3. Before generating code, read `docs/architecture/service.md` and the relevant files in `docs/domains/`.
+
+Do not read the whole of `.agents/` upfront. Load a rule, skill or template only when the task in front of you needs it.
 
 ## Route work
 
-- Match user intent to a command in [`.agents/commands/`](.agents/commands/).
-- Activate the matching specialist in [`.agents/agents/`](.agents/agents/).
-- Apply relevant skills in [`.agents/skills/`](.agents/skills/).
-- Generate from templates in [`.agents/templates/`](.agents/templates/).
+- Match user intent to a command in [`.agents/commands/`](.agents/commands/). A command that covers the request wins over freehand generation.
+- Detailed rules live in [`.agents/rules/`](.agents/rules/), scoped by layer. Read the ones for the files you are editing.
 
 ## After generation
 
-Prefer running:
-
 ```bash
-.agents/hooks/after-generate.sh
+.agents/hooks/after-generate.sh   # exits non-zero on any violation
 .agents/hooks/run-lint.sh
 .agents/hooks/run-tests.sh
 ```

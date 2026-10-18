@@ -1,5 +1,7 @@
 ---
 description: NestJS framework rules and module wiring conventions
+paths:
+  - "src/**/*.ts"
 ---
 
 # NestJS Framework Rules

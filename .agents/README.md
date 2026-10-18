@@ -28,8 +28,8 @@ These components are specialized for **TypeScript + NestJS + Hexagonal Architect
 * **Specialized Skills**: [`cqrs-generator`](skills/cqrs-generator/SKILL.md), [`repository-design`](skills/repository-design/SKILL.md), [`uow-outbox`](skills/uow-outbox/SKILL.md), [`api-contract-design`](skills/api-contract-design/SKILL.md), [`event-contract-design`](skills/event-contract-design/SKILL.md), [`domain-modeling`](skills/domain-modeling/SKILL.md), [`security-review`](skills/security-review/SKILL.md), [`testing-strategy`](skills/testing-strategy/SKILL.md)
 * **Specialized Blueprints**: [`templates/domain/`](templates/domain/aggregate.md), [`templates/application/`](templates/application/command-handler.md), [`templates/infrastructure/`](templates/infrastructure/mongoose-schema.md), [`templates/api/`](templates/api/controller.md)
 * **Architecture Boundary Hooks**:
-  * [`validate-boundaries.sh`](hooks/validate-boundaries.sh) — Checks `src/core/` for NestJS / Mongoose framework leaks
-  * [`validate-imports.sh`](hooks/validate-imports.sh) — Checks `src/application/` import direction
+  * [`validate-boundaries.sh`](hooks/validate-boundaries.sh) — Checks `src/domain/` for NestJS / Mongoose framework leaks
+  * [`validate-imports.sh`](hooks/validate-imports.sh) — Checks `src/applications/` import direction
   * [`validate-contracts.sh`](hooks/validate-contracts.sh) — Checks API documentation & controller contract consistency
   * [`after-generate.sh`](hooks/after-generate.sh) — Post-generation validation runner
 
@@ -100,7 +100,7 @@ When adapting this kit for a **new project demand** (e.g. switching to **Go + Gi
 
 | Component | Action | Details |
 |-----------|--------|---------|
-| **`AGENT.md`** | ✏️ Update | Edit the `## Dedicated Technology Stack` section to declare the new language, framework, and datastore. |
+| **`AGENT.md`** | ✏️ Update | Edit the `## Stack Profile` section to declare the new language, framework, and datastore. |
 | **`templates/`** | ✏️ Replace | Replace code blueprints in `domain/`, `application/`, `infrastructure/`, and `api/` with working code templates for the new stack. |
 | **`rules/`** | ✏️ Replace | Swap `rules/languages/` and `rules/frameworks/` files with coding standards for the new language/framework. |
 | **`skills/`** | ✏️ Replace | Replace stack-specific skills (`cqrs-generator`, `repository-design`, `uow-outbox`) with skills matching the new stack libraries (e.g. `gorm-repository` or `sqlalchemy`). |

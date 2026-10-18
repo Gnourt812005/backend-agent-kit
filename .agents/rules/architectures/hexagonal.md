@@ -1,5 +1,7 @@
 ---
 description: Hexagonal Architecture (Ports & Adapters) rules
+paths:
+  - "src/**"
 ---
 
 # Hexagonal Architecture Rules

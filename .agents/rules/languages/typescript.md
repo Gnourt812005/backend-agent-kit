@@ -1,5 +1,7 @@
 ---
 description: TypeScript specific constraints and standards
+paths:
+  - "**/*.ts"
 ---
 
 # TypeScript Rules

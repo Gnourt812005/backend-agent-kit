@@ -1,6 +1,8 @@
 ---
-trigger: always_on
 description: Error handling principles, domain exceptions, and HTTP error envelopes
+paths:
+  - "src/**"
+  - "test/**"
 ---
 
 # Error Handling Rules
